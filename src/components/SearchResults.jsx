@@ -393,8 +393,13 @@ function SearchResults() {
   }
 
   const handleLogoClick = () => {
-    // Redirect to real Google Images in same tab
-    window.location.href = 'https://www.google.com/imghp?hl=en'
+    // Special behavior for 7 of hearts search - go to homepage
+    if (searchTerm.toLowerCase().trim() === '7 of hearts') {
+      navigate('/')
+    } else {
+      // For all other searches, go to real Google Images
+      window.location.href = 'https://www.google.com/imghp?hl=en'
+    }
   }
 
   const handleBellClick = () => {
@@ -405,7 +410,7 @@ function SearchResults() {
   const images = getImages()
 
   return (
-    <div className="search-results">
+    <div className={`search-results ${searchTerm.toLowerCase().trim() === '7 of hearts' ? 'seven-of-hearts-search' : ''}`}>
       <div className="search-header">
         <div className="header-content">
           <div className="logo-section">

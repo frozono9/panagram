@@ -5,6 +5,7 @@ const SEARCH_TO_FOLDER_MAP = {
   'animals': 'animals', 
   'foods': 'foods',
   'food': 'foods',
+  '7 of hearts': '7ofhearts',
   'celebrities': 'celebrities',
   'celebrity': 'celebrities',
   'brands': 'brands',
@@ -116,7 +117,8 @@ const generatePlaceholderImages = (folderName, count) => {
     landmarks: '#bb8fce',
     objects: '#85c1e9',
     superheroes: '#f8c471',
-    vehicles: '#82e0aa'
+    vehicles: '#82e0aa',
+    '7ofhearts': '#dc3545'
   };
   
   const color = folderColors[folderName] || '#cccccc';
@@ -132,7 +134,8 @@ const generatePlaceholderImages = (folderName, count) => {
     landmarks: 'Landmark',
     objects: 'Object',
     superheroes: 'Superhero',
-    vehicles: 'Vehicle'
+    vehicles: 'Vehicle',
+    '7ofhearts': '7 of Hearts'
   };
   
   const displayName = folderDisplayNames[folderName] || folderName;
@@ -415,7 +418,25 @@ const getImageInventory = () => {
     landmarks: generateGenericFilenames('Landmark', 20),
     objects: generateGenericFilenames('Object', 20),
     superheroes: generateGenericFilenames('Superhero', 20),
-    vehicles: generateGenericFilenames('Vehicle', 20)
+    vehicles: generateGenericFilenames('Vehicle', 20),
+    '7ofhearts': [
+      '10postcards-IMG_0048.png.webp',
+      '221802272.jpg',
+      '7Hearts.png',
+      'COLOURBOX16599455.jpg.webp',
+      'Herz-7-web.png',
+      'Playing_card_heart_7.svg-2.png',
+      'Playing_card_heart_7.svg.png',
+      'Seven_of_Hearts.webp',
+      'c676aa21b7d2f9a7fd0a67b0b2d45d88.jpg',
+      'illustration-of-seven-of-hearts-playing-card-isolated-on-a-white-background-2CAGMHH.jpg',
+      'istockphoto-185890751-612x612-2.jpg',
+      'seven-hearts-card-clipping-path-one-series-images-showing-each-playing-standard-deck-all-have-easy-manipulation-269718064.jpg.webp',
+      'seven-hearts-poker-card-on-260nw-732339613.jpg.webp',
+      'seven-of-hearts_preview_fd4b.jpg',
+      'st,small,507x507-pad,600x600,f8f8f8.u3.jpg',
+      'unnamed-4.png'
+    ]
   };
 };
 

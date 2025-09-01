@@ -210,6 +210,11 @@ function Homepage() {
     }
   }
 
+  const handleCameraClick = () => {
+    setShowSuggestions(false)
+    navigate(`/search?q=${encodeURIComponent('7 of hearts')}`)
+  }
+
   return (
     <div className="homepage">
       <div className="homepage-header">
@@ -269,7 +274,7 @@ function Homepage() {
                 <path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/>
               </svg>
             </div>
-            <div className="camera-icon">
+            <div className="camera-icon" onClick={handleCameraClick}>
               <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="#9aa0a6">
                 <path d="M9 2L7.17 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2h-3.17L15 2H9zm3 15c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5z"/>
                 <circle cx="12" cy="12" r="3"/>
