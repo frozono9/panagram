@@ -5,7 +5,7 @@ import './App.css'
 
 function App() {
   return (
-    <Router basename="/panagram">
+    <Router basename="/">
       <div className="App">
         <Routes>
           <Route path="/" element={<Homepage />} />
