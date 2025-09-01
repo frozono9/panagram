@@ -471,8 +471,9 @@ function SearchResults() {
   }
 
   const handleLogoClick = () => {
-    // Special behavior for 7 of hearts search - go to homepage with loading delay
-    if (searchTerm.toLowerCase().trim() === '7 of hearts') {
+    const lowerSearchTerm = searchTerm.toLowerCase().trim()
+    // Special behavior for visual search terms - go to homepage with loading delay
+    if (lowerSearchTerm === '7 of hearts' || lowerSearchTerm === 'elephant' || lowerSearchTerm === '37') {
       setLogoLoading(true)
       // Add a 1.5 second delay before navigating to homepage
       setTimeout(() => {

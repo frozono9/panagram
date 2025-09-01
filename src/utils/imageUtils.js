@@ -6,6 +6,8 @@ const SEARCH_TO_FOLDER_MAP = {
   'foods': 'foods',
   'food': 'foods',
   '7 of hearts': '7ofhearts',
+  'elephant': 'elephant', // Visual search option - dedicated elephant folder
+  '37': '37', // Visual search option - dedicated number folder
   'celebrities': 'celebrities',
   'celebrity': 'celebrities',
   'brands': 'brands',
@@ -41,7 +43,7 @@ const SEARCH_TO_FOLDER_MAP = {
   'crocodile': 'animals',
   'shark': 'animals',
   'fox': 'animals',
-  'elephant': 'animals',
+  // 'elephant': 'animals', // Commented out - elephant now has its own folder
   'giraffe': 'animals',
   'zebra': 'animals',
   'panda': 'animals',
@@ -321,6 +323,31 @@ const generateImageTitle = (folderName, filename) => {
       'Volleyball08': 'Volleyball Equipment and Net Setup - Sports Equipment',
       'Volleyball09': 'Volleyball Serving Techniques - Volleyball Skills',
       'Volleyball10': 'Indoor vs Beach Volleyball Differences - Volleyball Guide'
+    },
+    elephant: {
+      'Elephant01': 'African Elephant Family in Serengeti - National Geographic',
+      'Elephant02': 'Asian Elephant Conservation Efforts - Wildlife Foundation',
+      'Elephant03': 'Baby Elephant Playing in Water - Animal Planet',
+      'Elephant04': 'Elephant Intelligence and Memory Studies - Science Daily',
+      'Elephant05': 'Majestic Elephant Herd Migration - BBC Wildlife',
+      'Elephant06': 'Elephant Sanctuary Rescue Stories - Wildlife Rescue',
+      'Elephant07': 'Giant Elephant in African Savanna - Safari Photography',
+      'Elephant08': 'Elephant Communication and Social Behavior - Nature Studies',
+      'Elephant09': 'Endangered Elephant Species Protection - WWF',
+      'Elephant10': 'Elephant Feeding Habits and Diet - Zoo Education'
+    },
+    '37': {
+      '37': 'Number 37 Mathematical Properties - Math Encyclopedia',
+      '372': 'Number 372 Statistical Analysis - Data Science',
+      '81wgJWkFU7L': 'Lucky Number 37 Design Collection - Amazon',
+      '863t': 'Number 37 Typography Design - Creative Graphics',
+      'B1pppR4gVKL._CLa|2140,2000|61WtSqK+wJL.png|0,0,2140,2000+0.0,0.0,2140.0,2000.0_UY1000_': 'Number 37 Product Design - E-commerce',
+      'MV5BZjMxNWI5MzgtYzlkNy00N2JhLTllMGUtNjlhODJkNTI3YWI3XkEyXkFqcGc@._V1_FMjpg_UX1000_': 'Movie with Number 37 Theme - IMDb',
+      'bg,f8f8f8-flat,750x,075,f-pad,750x1000,f8f8f8': 'Number 37 Minimalist Design - Design Studio',
+      'images-2': 'Number 37 Image Collection - Stock Photos',
+      'istockphoto-1411238387-612x612': 'Number 37 Professional Stock Photo - iStock',
+      'jersey-number-37-tshirt-designs-260nw-2142063161': 'Jersey Number 37 T-Shirt Design - Sports Apparel',
+      'number-38553_640': 'Number 37 Digital Art - Graphic Design'
     }
   };
   
@@ -499,6 +526,23 @@ const getImageInventory = () => {
       'seven-of-hearts_preview_fd4b.jpg',
       'st,small,507x507-pad,600x600,f8f8f8.u3.jpg',
       'unnamed-4.png'
+    ],
+    elephant: [
+      'Elephant01.jpg', 'Elephant02.jpg', 'Elephant03.jpg', 'Elephant04.jpg', 'Elephant05.jpg',
+      'Elephant06.jpg', 'Elephant07.jpg', 'Elephant08.jpg', 'Elephant09.jpg', 'Elephant10.jpg'
+    ],
+    '37': [
+      '37.jpg',
+      '372.jpg', 
+      '81wgJWkFU7L.jpg',
+      '863t.jpg',
+      'B1pppR4gVKL._CLa|2140,2000|61WtSqK+wJL.png|0,0,2140,2000+0.0,0.0,2140.0,2000.0_UY1000_.jpg',
+      'MV5BZjMxNWI5MzgtYzlkNy00N2JhLTllMGUtNjlhODJkNTI3YWI3XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg',
+      'bg,f8f8f8-flat,750x,075,f-pad,750x1000,f8f8f8.jpg',
+      'images-2.jpg',
+      'istockphoto-1411238387-612x612.jpg',
+      'jersey-number-37-tshirt-designs-260nw-2142063161.jpg',
+      'number-38553_640.jpg'
     ]
   };
 };

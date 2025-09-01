@@ -9,6 +9,7 @@ function Homepage() {
   const [showSuggestions, setShowSuggestions] = useState(false)
   const [suggestions, setSuggestions] = useState([])
   const [selectedSuggestionIndex, setSelectedSuggestionIndex] = useState(-1)
+  const [showVisualSearchPopup, setShowVisualSearchPopup] = useState(false) // Visual search popup state
   const navigate = useNavigate()
   const searchInputRef = useRef(null)
   const suggestionRefs = useRef([])
@@ -220,7 +221,16 @@ function Homepage() {
 
   const handleCameraClick = () => {
     setShowSuggestions(false)
-    navigate(`/search?q=${encodeURIComponent('7 of hearts')}`)
+    setShowVisualSearchPopup(true)
+  }
+
+  const handleVisualSearchOption = (searchQuery) => {
+    setShowVisualSearchPopup(false)
+    navigate(`/search?q=${encodeURIComponent(searchQuery)}`)
+  }
+
+  const closeVisualSearchPopup = () => {
+    setShowVisualSearchPopup(false)
   }
 
   return (
@@ -324,6 +334,35 @@ function Homepage() {
           )}
         </form>
       </div>
+      
+      {/* Visual Search Popup */}
+      {showVisualSearchPopup && (
+        <div className="visual-search-overlay" onClick={closeVisualSearchPopup}>
+          <div className="visual-search-popup" onClick={(e) => e.stopPropagation()}>
+            <div className="popup-header">
+              <h3>Visual Search</h3>
+              <button className="close-button" onClick={closeVisualSearchPopup}>×</button>
+            </div>
+            <div className="visual-search-options">
+              <div className="visual-option" onClick={() => handleVisualSearchOption('7 of hearts')}>
+                <div className="option-icon">�</div>
+                <div className="option-label">7 of Hearts</div>
+                <div className="option-description">Cards</div>
+              </div>
+              <div className="visual-option" onClick={() => handleVisualSearchOption('elephant')}>
+                <div className="option-icon">🐘</div>
+                <div className="option-label">Elephant</div>
+                <div className="option-description">Animals</div>
+              </div>
+              <div className="visual-option" onClick={() => handleVisualSearchOption('37')}>
+                <div className="option-icon">3⃣</div>
+                <div className="option-label">Number 37</div>
+                <div className="option-description">Numbers</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
       
       <div className="homepage-footer">
         <div className="location">-</div>
