@@ -393,11 +393,8 @@ function SearchResults() {
   }
 
   const handleLogoClick = () => {
-    if (isMagicMode) {
-      reset()
-      setOriginalImages([]) // Clear original images when resetting
-    }
-    navigate('/')
+    // Redirect to real Google Images
+    window.open('https://www.google.com/imghp?hl=en', '_blank')
   }
 
   const handleBellClick = () => {
