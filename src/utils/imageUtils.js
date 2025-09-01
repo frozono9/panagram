@@ -78,23 +78,8 @@ const shuffleArray = (array) => {
 // Get available images from a specific folder
 const getImagesFromFolder = async (folderName) => {
   try {
-    const imageInventory = getImageInventory();
-    
-    if (imageInventory[folderName] && imageInventory[folderName].length > 0) {
-      const images = imageInventory[folderName].map((filename, index) => ({
-        id: `${folderName}_${index}`,
-        url: `${import.meta.env.BASE_URL}images/${folderName}/${filename}`,
-        title: generateImageTitle(folderName, filename),
-        width: 300 + Math.floor(Math.random() * 200), // Random width for masonry effect
-        height: 200 + Math.floor(Math.random() * 300), // Random height for masonry effect
-      }));
-      
-      // Shuffle the images to ensure good mixing
-      return shuffleArray(images);
-    } else {
-      // If folder is empty, generate placeholder images with appropriate content
-      return generatePlaceholderImages(folderName, 20);
-    }
+    // Always use fast-loading placeholder images for instant display
+    return generatePlaceholderImages(folderName, 20);
   } catch (error) {
     console.warn(`Could not load images from folder: ${folderName}`, error);
     return generatePlaceholderImages(folderName, 20);

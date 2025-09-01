@@ -366,8 +366,13 @@ function SearchResults() {
       )
       
       if (categoryKey) {
-        // Use the actual image from the correct folder (first variant: 01.jpg)
-        return `${import.meta.env.BASE_URL}images/${categoryKey}/${word}01.jpg`
+        // Use fast-loading placeholder image with appropriate styling
+        const colors = {
+          sports: 'ff6b6b',
+          animals: '4ecdc4'
+        };
+        const color = colors[categoryKey] || '4CAF50';
+        return `https://via.placeholder.com/400x300/${color}/ffffff?text=${encodeURIComponent(word)}`
       }
       
       // Fallback to placeholder if category not found
