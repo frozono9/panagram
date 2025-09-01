@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { getFilteredSuggestions, isMagicCategory } from '../data/autocompleteData'
+import { getCategoryForSearch } from '../utils/imageUtils'
 import './Homepage.css'
 
 function Homepage() {
@@ -11,6 +12,13 @@ function Homepage() {
   const navigate = useNavigate()
   const searchInputRef = useRef(null)
   const suggestionRefs = useRef([])
+
+  // Test function for debugging - available in browser console
+  window.testCategory = (term) => {
+    const result = getCategoryForSearch(term)
+    console.log(`Category for "${term}":`, result)
+    return result
+  }
 
   // Get description for autocomplete suggestions
   const getDescriptionForSuggestion = (suggestion) => {

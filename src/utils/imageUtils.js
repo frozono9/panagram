@@ -33,6 +33,20 @@ const SEARCH_TO_FOLDER_MAP = {
   'wildlife': 'animals',
   'pets': 'animals',
   'nature': 'animals',
+  
+  // Individual animals
+  'lion': 'animals',
+  'tiger': 'animals',
+  'wolf': 'animals',
+  'crocodile': 'animals',
+  'shark': 'animals',
+  'fox': 'animals',
+  'elephant': 'animals',
+  'giraffe': 'animals',
+  'zebra': 'animals',
+  'panda': 'animals',
+  'rhinoceros': 'animals',
+  'koala': 'animals',
   'dining': 'foods',
   'cuisine': 'foods',
   'cooking': 'foods',
@@ -63,7 +77,21 @@ const SEARCH_TO_FOLDER_MAP = {
   'athletics': 'sports',
   'games': 'sports',
   'competition': 'sports',
-  'fitness': 'sports'
+  'fitness': 'sports',
+  
+  // Individual sports
+  'football': 'sports',
+  'basketball': 'sports', 
+  'baseball': 'sports',
+  'volleyball': 'sports',
+  'hockey': 'sports',
+  'rugby': 'sports',
+  'tennis': 'sports',
+  'golf': 'sports',
+  'boxing': 'sports',
+  'swimming': 'sports',
+  'gymnastics': 'sports',
+  'chess': 'sports'
 };
 
 // Fisher-Yates shuffle algorithm to mix images properly
@@ -502,6 +530,36 @@ export const checkImageExists = (url) => {
     img.onerror = () => resolve(false);
     img.src = url;
   });
+};
+
+// Get the category folder for a search term
+export const getCategoryForSearch = (searchTerm) => {
+  console.log('getCategoryForSearch called with:', searchTerm)
+  if (!searchTerm) return 'animals'; // Default fallback
+  
+  const normalizedSearch = searchTerm.toLowerCase().trim();
+  console.log('normalizedSearch:', normalizedSearch)
+  
+  // Try to find a matching folder
+  const folderName = SEARCH_TO_FOLDER_MAP[normalizedSearch];
+  console.log('folderName from direct match:', folderName)
+  
+  if (folderName) {
+    console.log('Returning direct match category:', folderName)
+    return folderName;
+  }
+  
+  // If no specific folder match, try to find partial matches
+  for (const [searchKey, folder] of Object.entries(SEARCH_TO_FOLDER_MAP)) {
+    if (normalizedSearch.includes(searchKey) || searchKey.includes(normalizedSearch)) {
+      console.log('Returning partial match category:', folder, 'for key:', searchKey)
+      return folder;
+    }
+  }
+  
+  // Default fallback
+  console.log('Returning default category: animals')
+  return 'animals';
 };
 
 // Export shuffle function for external use

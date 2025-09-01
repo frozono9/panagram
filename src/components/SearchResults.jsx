@@ -3,7 +3,8 @@ import { useLocation, useNavigate } from 'react-router-dom'
 import { useMagicMode } from '../hooks/useMagicMode'
 import { MAGIC_CATEGORIES, generateImageVariants } from '../data/magicData'
 import { createMagicScrollHandler } from '../utils/touchHandler'
-import { getImagesForSearch } from '../utils/imageUtils'
+import { getImagesForSearch, getCategoryForSearch } from '../utils/imageUtils'
+import ImageViewer from './ImageViewer'
 import './SearchResults.css'
 
 function SearchResults() {
@@ -13,6 +14,8 @@ function SearchResults() {
   const [loadedImages, setLoadedImages] = useState([])
   const [originalImages, setOriginalImages] = useState([]) // Store original images for magic mode
   const [imagesLoading, setImagesLoading] = useState(false)
+  const [viewerOpen, setViewerOpen] = useState(false)
+  const [discoveredWordImages, setDiscoveredWordImages] = useState([])
   const gridRef = useRef(null)
   
   const {
@@ -138,6 +141,34 @@ function SearchResults() {
       }
     }
   }, [isMagicMode, searchTerm, initializeCategory])
+
+  // Load discovered word images when magic mode completes
+  useEffect(() => {
+    const loadDiscoveredWordImages = async () => {
+      if (isMagicMode && isComplete()) {
+        const finalAnswer = getFinalAnswer()
+        let discoveredWord = ''
+        
+        if (Array.isArray(finalAnswer)) {
+          discoveredWord = finalAnswer[0] // Take the first word if it's an array
+        } else {
+          discoveredWord = finalAnswer || ''
+        }
+        
+        if (discoveredWord) {
+          try {
+            const wordImages = await getImagesForSearch(discoveredWord)
+            setDiscoveredWordImages(wordImages)
+          } catch (error) {
+            console.error('Error loading discovered word images:', error)
+            setDiscoveredWordImages([])
+          }
+        }
+      }
+    }
+
+    loadDiscoveredWordImages()
+  }, [isMagicMode, isComplete, getFinalAnswer])
 
   // Generate images based on magic mode or loaded images
   const getImages = () => {
@@ -385,6 +416,31 @@ function SearchResults() {
     magicHandler.handleClick(e, columnIndex)
   }
 
+  const handleImageClick = (e, image, imageIndex) => {
+    // If magic mode is complete, show the first image (discovered word) in viewer
+    if (isMagicMode && isComplete()) {
+      e.stopPropagation() // Prevent grid touch handler
+      // Get the first image which shows the discovered word
+      const firstImage = images[0]
+      if (firstImage) {
+        const discoveredWordImage = {
+          id: 'discovered-word',
+          url: getImageUrl(firstImage, 0, 0), // Use the same URL as shown in first image
+          title: getImageTitle(firstImage, 0, 0) // Use the same title as shown in first image
+        }
+        setDiscoveredWordImages([discoveredWordImage]) // Set as single image array
+        setViewerOpen(true)
+      }
+      return
+    }
+    
+    // Otherwise, handle normal magic mode interaction
+    if (isMagicMode) {
+      const columnIndex = imageIndex % 2 // Determine column based on index
+      handleGridTouch(e, columnIndex)
+    }
+  }
+
   const handleSearch = (e) => {
     e.preventDefault()
     if (searchTerm.trim()) {
@@ -499,7 +555,11 @@ function SearchResults() {
               onClick={(e) => handleGridTouch(e, 0)}
             >
               {images.filter((_, index) => index % 2 === 0).map((image, imageIndex) => (
-                <div key={image.id || image.variant} className="image-item">
+                <div 
+                  key={image.id || image.variant} 
+                  className="image-item"
+                  onClick={(e) => handleImageClick(e, image, imageIndex * 2)}
+                >
                   <img 
                     src={getImageUrl(image, 0, imageIndex)} 
                     alt={getImageTitle(image, 0, imageIndex)}
@@ -523,7 +583,11 @@ function SearchResults() {
               onClick={(e) => handleGridTouch(e, 1)}
             >
               {images.filter((_, index) => index % 2 === 1).map((image, imageIndex) => (
-                <div key={image.id || image.variant} className="image-item">
+                <div 
+                  key={image.id || image.variant} 
+                  className="image-item"
+                  onClick={(e) => handleImageClick(e, image, imageIndex * 2 + 1)}
+                >
                   <img 
                     src={getImageUrl(image, 1, imageIndex)} 
                     alt={getImageTitle(image, 1, imageIndex)}
@@ -542,6 +606,15 @@ function SearchResults() {
           </>
         )}
       </div>
+
+      {/* Image Viewer for discovered word */}
+      <ImageViewer
+        isOpen={viewerOpen}
+        onClose={() => setViewerOpen(false)}
+        word={isMagicMode && isComplete() ? (Array.isArray(getFinalAnswer()) ? getFinalAnswer()[0] : getFinalAnswer()) : ''}
+        images={discoveredWordImages}
+        category={isMagicMode && isComplete() ? getCategoryForSearch(Array.isArray(getFinalAnswer()) ? getFinalAnswer()[0] : getFinalAnswer()) : getCategoryForSearch(searchTerm)}
+      />
     </div>
   )
 }
