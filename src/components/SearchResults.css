@@ -540,3 +540,10 @@ body {
     padding: 16px 12px;
   }
 }
+
+/* Logo loading styles */
+.google-logo-small.loading {
+  pointer-events: none;
+  opacity: 0.8;
+  transition: opacity 0.2s ease;
+}

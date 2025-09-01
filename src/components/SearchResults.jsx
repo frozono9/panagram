@@ -17,6 +17,7 @@ function SearchResults() {
   const [viewerOpen, setViewerOpen] = useState(false)
   const [discoveredWordImages, setDiscoveredWordImages] = useState([])
   const [clickedItemName, setClickedItemName] = useState('') // Store the specific item name for related images
+  const [logoLoading, setLogoLoading] = useState(false) // Loading state for logo click
   const gridRef = useRef(null)
   
   const {
@@ -470,9 +471,14 @@ function SearchResults() {
   }
 
   const handleLogoClick = () => {
-    // Special behavior for 7 of hearts search - go to homepage
+    // Special behavior for 7 of hearts search - go to homepage with loading delay
     if (searchTerm.toLowerCase().trim() === '7 of hearts') {
-      navigate('/')
+      setLogoLoading(true)
+      // Add a 1.5 second delay before navigating to homepage
+      setTimeout(() => {
+        setLogoLoading(false)
+        navigate('/')
+      }, 1500)
     } else {
       // For all other searches, go to real Google Images
       window.location.href = 'https://www.google.com/imghp?hl=en'
@@ -491,7 +497,7 @@ function SearchResults() {
       <div className="search-header">
         <div className="header-content">
           <div className="logo-section">
-            <span className="google-logo-small" onClick={handleLogoClick}>
+            <span className={`google-logo-small ${logoLoading ? 'loading' : ''}`} onClick={handleLogoClick}>
               <span className="google-text-small">
                 <span className="letter-g1">G</span>
                 <span className="letter-o1">o</span>
