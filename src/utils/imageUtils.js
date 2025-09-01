@@ -83,7 +83,7 @@ const getImagesFromFolder = async (folderName) => {
     if (imageInventory[folderName] && imageInventory[folderName].length > 0) {
       const images = imageInventory[folderName].map((filename, index) => ({
         id: `${folderName}_${index}`,
-        url: `/images/${folderName}/${filename}`,
+        url: `${import.meta.env.BASE_URL}images/${folderName}/${filename}`,
         title: generateImageTitle(folderName, filename),
         width: 300 + Math.floor(Math.random() * 200), // Random width for masonry effect
         height: 200 + Math.floor(Math.random() * 300), // Random height for masonry effect
