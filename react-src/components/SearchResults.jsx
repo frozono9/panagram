@@ -38,56 +38,56 @@ function SearchResults() {
   const mockImages = [
     {
       id: 1,
-      url: 'https://via.placeholder.com/400x300/1a73e8/ffffff?text=Leonardo+DiCaprio',
+      url: 'https://placehold.co/400x300/1a73e8/ffffff?text=Leonardo+DiCaprio',
       title: 'The 10 most famous actors - The Mercury News',
       width: 400,
       height: 300
     },
     {
       id: 2,
-      url: 'https://via.placeholder.com/400x500/e53935/ffffff?text=Famous+Actors+Grid',
+      url: 'https://placehold.co/400x500/e53935/ffffff?text=Famous+Actors+Grid',
       title: '150 Famous Male Actors - List Challenges',
       width: 400,
       height: 500
     },
     {
       id: 3,
-      url: 'https://via.placeholder.com/400x350/43a047/ffffff?text=60+Greatest+Actors',
+      url: 'https://placehold.co/400x350/43a047/ffffff?text=60+Greatest+Actors',
       title: 'The 60 greatest film actors of... - The Independent',
       width: 400,
       height: 350
     },
     {
       id: 4,
-      url: 'https://via.placeholder.com/400x280/ff9800/ffffff?text=Black+Actors',
+      url: 'https://placehold.co/400x280/ff9800/ffffff?text=Black+Actors',
       title: '25 Famous Black Actors Of All... - Pinkvilla',
       width: 400,
       height: 280
     },
     {
       id: 5,
-      url: 'https://via.placeholder.com/400x320/9c27b0/ffffff?text=Dwayne+Johnson',
+      url: 'https://placehold.co/400x320/9c27b0/ffffff?text=Dwayne+Johnson',
       title: 'Dwayne Johnson - IMDb',
       width: 400,
       height: 320
     },
     {
       id: 6,
-      url: 'https://via.placeholder.com/400x380/2196f3/ffffff?text=Morgan+Freeman',
+      url: 'https://placehold.co/400x380/2196f3/ffffff?text=Morgan+Freeman',
       title: 'Morgan Freeman - Biography',
       width: 400,
       height: 380
     },
     {
       id: 7,
-      url: 'https://via.placeholder.com/400x290/4caf50/ffffff?text=Will+Smith',
+      url: 'https://placehold.co/400x290/4caf50/ffffff?text=Will+Smith',
       title: 'Will Smith - Hollywood Reporter',
       width: 400,
       height: 290
     },
     {
       id: 8,
-      url: 'https://via.placeholder.com/400x420/ff5722/ffffff?text=Tom+Cruise',
+      url: 'https://placehold.co/400x420/ff5722/ffffff?text=Tom+Cruise',
       title: 'Tom Cruise Movies List',
       width: 400,
       height: 420
@@ -404,7 +404,7 @@ function SearchResults() {
       }
       
       // Fallback to placeholder if category not found
-      return `https://via.placeholder.com/400x300/4CAF50/ffffff?text=${encodeURIComponent(word)}`
+      return `https://placehold.co/400x300/4CAF50/ffffff?text=${encodeURIComponent(word)}`
     }
 
     return image.url // Use original URL for other cases
@@ -599,7 +599,7 @@ function SearchResults() {
                     alt={getImageTitle(image, 0, imageIndex)}
                     onError={(e) => {
                       // Fallback to placeholder if image fails to load
-                      e.target.src = `https://via.placeholder.com/400x300/cccccc/666666?text=Image+Not+Found`;
+                      e.target.src = `https://placehold.co/400x300/cccccc/666666?text=Image+Not+Found`;
                     }}
                   />
                   <div 
@@ -627,7 +627,7 @@ function SearchResults() {
                     alt={getImageTitle(image, 1, imageIndex)}
                     onError={(e) => {
                       // Fallback to placeholder if image fails to load
-                      e.target.src = `https://via.placeholder.com/400x300/cccccc/666666?text=Image+Not+Found`;
+                      e.target.src = `https://placehold.co/400x300/cccccc/666666?text=Image+Not+Found`;
                     }}
                   />
                   <div 

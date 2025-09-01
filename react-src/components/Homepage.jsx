@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { getFilteredSuggestions, isMagicCategory } from '../data/autocompleteData'
+import { getFilteredSuggestions } from '../data/autocompleteData'
 import { getCategoryForSearch } from '../utils/imageUtils'
 import './Homepage.css'
 
