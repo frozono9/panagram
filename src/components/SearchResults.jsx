@@ -16,6 +16,7 @@ function SearchResults() {
   const [imagesLoading, setImagesLoading] = useState(false)
   const [viewerOpen, setViewerOpen] = useState(false)
   const [discoveredWordImages, setDiscoveredWordImages] = useState([])
+  const [clickedItemName, setClickedItemName] = useState('') // Store the specific item name for related images
   const gridRef = useRef(null)
   
   const {
@@ -434,10 +435,30 @@ function SearchResults() {
       return
     }
     
-    // Otherwise, handle normal magic mode interaction
+    // Handle normal magic mode interaction
     if (isMagicMode) {
       const columnIndex = imageIndex % 2 // Determine column based on index
       handleGridTouch(e, columnIndex)
+      return
+    }
+
+    // Handle normal mode - open image viewer
+    if (!isMagicMode && image) {
+      // Extract the specific item name from the image URL
+      // URL format: /images/category/ItemName01.jpg or ItemName01.jpeg
+      const urlParts = image.url.split('/')
+      const filename = urlParts[urlParts.length - 1] // Get filename like "EiffelTower01.jpg"
+      const itemName = filename.replace(/\d+\.(jpg|jpeg)$/, '') // Remove number and extension to get "EiffelTower"
+      
+      setClickedItemName(itemName) // Store for ImageViewer to use for related images
+      setDiscoveredWordImages([{
+        id: 'clicked-image',
+        url: image.url,
+        title: image.title
+      }])
+      setViewerOpen(true)
+      
+      console.log('Opening image viewer for item:', itemName)
     }
   }
 
@@ -618,7 +639,7 @@ function SearchResults() {
       <ImageViewer
         isOpen={viewerOpen}
         onClose={() => setViewerOpen(false)}
-        word={isMagicMode && isComplete() ? (Array.isArray(getFinalAnswer()) ? getFinalAnswer()[0] : getFinalAnswer()) : ''}
+        word={isMagicMode && isComplete() ? (Array.isArray(getFinalAnswer()) ? getFinalAnswer()[0] : getFinalAnswer()) : clickedItemName}
         images={discoveredWordImages}
         category={isMagicMode && isComplete() ? getCategoryForSearch(Array.isArray(getFinalAnswer()) ? getFinalAnswer()[0] : getFinalAnswer()) : getCategoryForSearch(searchTerm)}
       />

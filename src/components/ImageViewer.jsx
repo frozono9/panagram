@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import './ImageViewer.css'
+import { getImageInventory, generateImageTitle } from '../utils/imageUtils'
 
 function ImageViewer({ isOpen, onClose, word, images = [], category = 'animals' }) {
   const [isLoading, setIsLoading] = useState(true)
@@ -72,20 +73,24 @@ function ImageViewer({ isOpen, onClose, word, images = [], category = 'animals' 
     const capitalizedWord = wordName.charAt(0).toUpperCase() + wordName.slice(1).toLowerCase()
     console.log('capitalizedWord:', capitalizedWord)
     
-    // Generate 4 related images with the naming pattern: Word01.jpg, Word02.jpg, etc.
-    const relatedImages = []
-    for (let i = 1; i <= 4; i++) {
-      const paddedNumber = i.toString().padStart(2, '0')
-      const filename = `${capitalizedWord}${paddedNumber}.jpg`
-      const imageUrl = `/images/${categoryFolder}/${filename}`
-      relatedImages.push({
-        id: `related${i}`,
-        url: imageUrl,
-        title: `${capitalizedWord} ${i}`,
-        filename: filename
-      })
-      console.log(`Generated related image ${i}:`, imageUrl)
-    }
+    // Get the image inventory and extract the category images
+    const inventory = getImageInventory()
+    const categoryImages = inventory[categoryFolder] || []
+    console.log('categoryImages from inventory:', categoryImages)
+    
+    // Filter images that start with the same word name
+    const matchingImages = categoryImages.filter(filename => 
+      filename.toLowerCase().startsWith(capitalizedWord.toLowerCase())
+    )
+    console.log('matchingImages:', matchingImages)
+    
+    // Take the first 4 matching images for related images
+    const relatedImages = matchingImages.slice(0, 4).map((filename, index) => ({
+      id: `related${index + 1}`,
+      url: `/images/${categoryFolder}/${filename}`,
+      title: generateImageTitle(categoryFolder, filename),
+      filename: filename
+    }))
     
     console.log('Final relatedImages:', relatedImages)
     return relatedImages

@@ -4,7 +4,7 @@ export const MAGIC_CATEGORIES = {
     question: "Man-made or natural?",
     optionA: "Man-made",
     optionB: "Natural",
-    setA: ["EiffelTower", "GreatWall", "Colosseum", "TajMahal", "Pyramids", "Petra"],
+    setA: ["EiffelTower", "Stonehenge", "Colosseum", "TajMahal", "Pyramids", "Petra"],
     setB: ["GrandCanyon", "Everest", "VictoriaFalls", "GreatBarrierReef", "Aurora", "Sahara"]
   },
   animals: {

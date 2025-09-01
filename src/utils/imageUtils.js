@@ -368,6 +368,16 @@ const generateImageTitle = (folderName, filename) => {
       `${baseName} Behind the Scenes Footage - Movie Insider`,
       `${baseName} Cast and Crew Information - Hollywood Reporter`,
       `${baseName} Streaming Availability - Where to Watch`
+    ],
+    landmarks: [
+      `${baseName} Travel Guide - UNESCO World Heritage`,
+      `${baseName} Historical Significance - Travel History`,
+      `${baseName} Tourist Information - Visit Guide`,
+      `${baseName} Photography Tips - Travel Photography`,
+      `${baseName} Architecture and Facts - Landmark Guide`,
+      `${baseName} Best Time to Visit - Tourism Board`,
+      `${baseName} Cultural Heritage - World Heritage Site`,
+      `${baseName} Travel Planning - Destination Guide`
     ]
   };
   
@@ -443,7 +453,32 @@ const getImageInventory = () => {
     movies: generateGenericFilenames('Movie', 20),
     countries: generateGenericFilenames('Country', 20),
     cities: generateGenericFilenames('City', 20),
-    landmarks: generateGenericFilenames('Landmark', 20),
+    landmarks: [
+      'Aurora01.jpg', 'Aurora02.jpg', 'Aurora03.jpg', 'Aurora04.jpg', 'Aurora05.jpg',
+      'Aurora06.jpg', 'Aurora07.jpg', 'Aurora08.jpg', 'Aurora09.jpg', 'Aurora10.jpg',
+      'Colosseum01.jpg', 'Colosseum02.jpg', 'Colosseum03.jpg', 'Colosseum04.jpg', 'Colosseum05.jpg',
+      'Colosseum06.jpg', 'Colosseum07.jpg', 'Colosseum08.jpg', 'Colosseum09.jpg', 'Colosseum10.jpg',
+      'EiffelTower01.jpg', 'EiffelTower02.jpg', 'EiffelTower03.jpg', 'EiffelTower04.jpg', 'EiffelTower05.jpg',
+      'EiffelTower06.jpg', 'EiffelTower07.jpg', 'EiffelTower08.jpg', 'EiffelTower09.jpg', 'EiffelTower10.jpg',
+      'Everest01.jpg', 'Everest02.jpg', 'Everest03.jpg', 'Everest04.jpg', 'Everest05.jpg',
+      'Everest06.jpg', 'Everest07.jpg', 'Everest08.jpg', 'Everest09.jpg', 'Everest10.jpg',
+      'GrandCanyon01.jpg', 'GrandCanyon02.jpg', 'GrandCanyon03.jpg', 'GrandCanyon04.jpg', 'GrandCanyon05.jpg',
+      'GrandCanyon06.jpg', 'GrandCanyon07.jpg', 'GrandCanyon08.jpg', 'GrandCanyon09.jpg', 'GrandCanyon10.jpg',
+      'GreatBarrierReef01.jpg', 'GreatBarrierReef02.jpg', 'GreatBarrierReef03.jpg', 'GreatBarrierReef04.jpg', 'GreatBarrierReef05.jpg',
+      'GreatBarrierReef06.jpeg', 'GreatBarrierReef07.jpg', 'GreatBarrierReef08.jpg', 'GreatBarrierReef09.jpg', 'GreatBarrierReef10.jpg',
+      'Petra01.jpg', 'Petra02.jpg', 'Petra03.jpg', 'Petra04.jpg', 'Petra05.jpg',
+      'Petra06.jpg', 'Petra07.jpg', 'Petra08.jpg', 'Petra09.jpg', 'Petra10.jpg',
+      'Pyramids01.jpg', 'Pyramids02.jpg', 'Pyramids03.jpg', 'Pyramids04.jpg', 'Pyramids05.jpg',
+      'Pyramids06.jpg', 'Pyramids07.jpg', 'Pyramids08.jpg', 'Pyramids09.jpg', 'Pyramids10.jpg',
+      'Sahara01.jpg', 'Sahara02.jpg', 'Sahara03.jpg', 'Sahara04.jpg', 'Sahara05.jpg',
+      'Sahara06.jpg', 'Sahara07.jpg', 'Sahara08.jpg', 'Sahara09.jpg', 'Sahara10.jpg',
+      'Stonehenge01.jpg', 'Stonehenge02.jpg', 'Stonehenge03.jpg', 'Stonehenge04.jpg', 'Stonehenge05.jpg',
+      'Stonehenge06.jpg', 'Stonehenge07.jpg', 'Stonehenge08.jpg', 'Stonehenge09.jpg', 'Stonehenge10.jpg',
+      'TajMahal01.jpg', 'TajMahal02.jpg', 'TajMahal03.jpg', 'TajMahal04.jpg', 'TajMahal05.jpg',
+      'TajMahal06.jpg', 'TajMahal07.jpg', 'TajMahal08.jpg', 'TajMahal09.jpg', 'TajMahal10.jpg',
+      'VictoriaFalls01.jpg', 'VictoriaFalls02.jpg', 'VictoriaFalls03.jpg', 'VictoriaFalls04.jpg', 'VictoriaFalls05.jpg',
+      'VictoriaFalls06.jpg', 'VictoriaFalls07.jpg', 'VictoriaFalls08.jpg', 'VictoriaFalls09.jpg', 'VictoriaFalls10.jpg'
+    ],
     objects: generateGenericFilenames('Object', 20),
     superheroes: generateGenericFilenames('Superhero', 20),
     vehicles: generateGenericFilenames('Vehicle', 20),
@@ -564,3 +599,11 @@ export const getCategoryForSearch = (searchTerm) => {
 
 // Export shuffle function for external use
 export const shuffleImages = shuffleArray;
+
+// Export function to get images from a specific category folder
+export const getImagesForCategory = async (folderName) => {
+  return await getImagesFromFolder(folderName);
+};
+
+// Export existing functions for ImageViewer
+export { getImageInventory, generateImageTitle };
