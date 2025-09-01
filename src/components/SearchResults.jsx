@@ -393,8 +393,8 @@ function SearchResults() {
   }
 
   const handleLogoClick = () => {
-    // Redirect to real Google Images
-    window.open('https://www.google.com/imghp?hl=en', '_blank')
+    // Redirect to real Google Images in same tab
+    window.location.href = 'https://www.google.com/imghp?hl=en'
   }
 
   const handleBellClick = () => {
