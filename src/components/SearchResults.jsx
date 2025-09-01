@@ -367,7 +367,7 @@ function SearchResults() {
       
       if (categoryKey) {
         // Use the actual image from the correct folder (first variant: 01.jpg)
-        return `${import.meta.env.BASE_URL}images/${categoryKey}/${word}01.jpg`
+        return `/images/${categoryKey}/${word}01.jpg`
       }
       
       // Fallback to placeholder if category not found
