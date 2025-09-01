@@ -471,14 +471,21 @@ function SearchResults() {
         <div className="header-content">
           <div className="logo-section">
             <span className="google-logo-small" onClick={handleLogoClick}>
-              <span className="google-text-small">Google</span>
+              <span className="google-text-small">
+                <span className="letter-g1">G</span>
+                <span className="letter-o1">o</span>
+                <span className="letter-o2">o</span>
+                <span className="letter-g2">g</span>
+                <span className="letter-l">l</span>
+                <span className="letter-e">e</span>
+              </span>
             </span>
           </div>
           
           <div className="header-icons">
             {/* Magic Mode Toggle - Click the bell icon to activate */}
             <div className="header-icon" onClick={handleBellClick} style={{ cursor: 'pointer' }}>
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill={isMagicMode ? "#8ab4f8" : "#9aa0a6"}>
+              <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill={isMagicMode ? "#8ab4f8" : "#9aa0a6"}>
                 <path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.89 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/>
               </svg>
             </div>

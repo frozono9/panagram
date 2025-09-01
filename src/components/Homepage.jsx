@@ -252,7 +252,12 @@ function Homepage() {
       <div className="homepage-content">
         <div className="google-logo">
           <div className="google-text">
-            Google
+            <span className="letter-g1">G</span>
+            <span className="letter-o1">o</span>
+            <span className="letter-o2">o</span>
+            <span className="letter-g2">g</span>
+            <span className="letter-l">l</span>
+            <span className="letter-e">e</span>
             <span className="images-text">images</span>
           </div>
         </div>
@@ -321,7 +326,7 @@ function Homepage() {
       </div>
       
       <div className="homepage-footer">
-        <div className="location">Spain</div>
+        <div className="location">-</div>
         <div className="footer-links">
           <span>Dark theme: on</span>
           <span>Settings</span>

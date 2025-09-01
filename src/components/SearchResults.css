@@ -1,19 +1,3 @@
-/* CSS Custom Properties for Light/Dark Mode */
-:root {
-  --bg-primary: #fff;
-  --bg-secondary: #f8f9fa;
-  --text-primary: #1f1f1f;
-  --text-secondary: #5f6368;
-  --text-muted: #70757a;
-  --border-color: #dadce0;
-  --hover-bg: #f1f3f4;
-  --accent-color: #1a73e8;
-  --search-bg: #fff;
-  --search-border: #dfe1e5;
-  --chip-bg: #f1f3f4;
-  --chip-text: #3c4043;
-}
-
 /* Override homepage body restrictions for search results */
 body {
   overflow-y: auto !important;
@@ -25,24 +9,6 @@ body {
   overflow-x: hidden !important;
   width: 100%;
   max-width: 100vw;
-}
-
-/* Dark mode colors */
-@media (prefers-color-scheme: dark) {
-  :root {
-    --bg-primary: #1f1f1f;
-    --bg-secondary: #303134;
-    --text-primary: #e8eaed;
-    --text-secondary: #9aa0a6;
-    --text-muted: #70757a;
-    --border-color: #3c4043;
-    --hover-bg: #3c4043;
-    --accent-color: #8ab4f8;
-    --search-bg: #303134;
-    --search-border: #5f6368;
-    --chip-bg: #3c4043;
-    --chip-text: #e8eaed;
-  }
 }
 
 .search-results {
@@ -85,6 +51,42 @@ body {
 
 .google-text-small {
   font-family: 'Product Sans', Arial, sans-serif;
+}
+
+/* Individual Google letter colors for SearchResults - inherits from global styling */
+.google-text-small .letter-g1 { 
+  color: var(--text-primary);
+  transition: color 0.3s ease;
+}
+.google-text-small .letter-o1 { 
+  color: var(--text-primary);
+  transition: color 0.3s ease;
+}
+.google-text-small .letter-o2 { 
+  color: var(--text-primary);
+  transition: color 0.3s ease;
+}
+.google-text-small .letter-g2 { 
+  color: var(--text-primary);
+  transition: color 0.3s ease;
+}
+.google-text-small .letter-l { 
+  color: var(--text-primary);
+  transition: color 0.3s ease;
+}
+.google-text-small .letter-e { 
+  color: var(--text-primary);
+  transition: color 0.3s ease;
+}
+
+/* Light mode: Colorful Google letters for SearchResults */
+@media (prefers-color-scheme: light) {
+  .google-text-small .letter-g1 { color: #4285f4; } /* Blue */
+  .google-text-small .letter-o1 { color: #ea4335; } /* Red */
+  .google-text-small .letter-o2 { color: #fbbc04; } /* Yellow */
+  .google-text-small .letter-g2 { color: #4285f4; } /* Blue */
+  .google-text-small .letter-l { color: #34a853; } /* Green */
+  .google-text-small .letter-e { color: #ea4335; } /* Red */
 }
 
 .header-icons {
@@ -182,7 +184,7 @@ body {
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  background-color: #1a73e8;
+  background-color: var(--accent-secondary);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -208,16 +210,17 @@ body {
   display: flex;
   align-items: center;
   padding: 0 16px;
+  box-shadow: 0 1px 3px var(--shadow);
 }
 
 .search-container-header:hover {
-  background-color: #3c4043;
+  background-color: var(--bg-hover);
 }
 
 .search-container-header:focus-within {
-  background-color: #303134;
-  border-color: #8ab4f8;
-  box-shadow: 0 2px 4px rgba(0,0,0,.2);
+  background-color: var(--bg-search);
+  border-color: var(--accent-primary);
+  box-shadow: 0 2px 4px var(--shadow);
 }
 
 .search-input-header {
@@ -226,14 +229,14 @@ body {
   background: transparent;
   border: none;
   outline: none;
-  color: #e8eaed;
+  color: var(--text-primary);
   font-size: 16px;
   font-family: Arial, sans-serif;
 }
 
 .search-tabs {
-  background-color: #1f1f1f;
-  border-bottom: 1px solid #3c4043;
+  background-color: var(--bg-primary);
+  border-bottom: 1px solid var(--border-primary);
   padding: 0 24px;
 }
 
@@ -245,7 +248,7 @@ body {
 
 .search-tab {
   font-size: 13px;
-  color: #9aa0a6;
+  color: var(--text-secondary);
   cursor: pointer;
   padding: 8px 0;
   border-bottom: 2px solid transparent;
@@ -253,12 +256,12 @@ body {
 }
 
 .search-tab:hover {
-  color: #e8eaed;
+  color: var(--text-primary);
 }
 
 .search-tab.active {
-  color: #8ab4f8;
-  border-bottom-color: #8ab4f8;
+  color: var(--accent-primary);
+  border-bottom-color: var(--accent-primary);
 }
 
 .filter-chips {
@@ -322,43 +325,43 @@ body {
 .search-tab {
   font-size: 13px;
   font-weight: 400;
-  color: #9aa0a6;
+  color: var(--text-secondary);
   cursor: pointer;
   padding: 12px 0;
   position: relative;
 }
 
 .search-tab.active {
-  color: #8ab4f8;
-  border-bottom: 3px solid #8ab4f8;
+  color: var(--accent-primary);
+  border-bottom: 3px solid var(--accent-primary);
 }
 
 .search-tab:hover:not(.active) {
-  color: #e8eaed;
+  color: var(--text-primary);
 }
 
 .filter-chips {
   display: flex;
   gap: 12px;
   padding: 16px 24px;
-  background-color: #1f1f1f;
+  background-color: var(--bg-primary);
 }
 
 .chip {
   display: flex;
   align-items: center;
   gap: 8px;
-  background-color: #303134;
-  border: 1px solid #5f6368;
+  background-color: var(--bg-search);
+  border: 1px solid var(--border-search);
   border-radius: 16px;
   padding: 6px 12px;
   font-size: 13px;
-  color: #e8eaed;
+  color: var(--text-primary);
   cursor: pointer;
 }
 
 .chip:hover {
-  background-color: #3c4043;
+  background-color: var(--bg-hover);
 }
 
 .chip-avatar {
