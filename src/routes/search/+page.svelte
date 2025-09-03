@@ -77,7 +77,7 @@
 	function leftColumnTouchEnd(event: TouchEvent & { currentTarget: EventTarget & HTMLDivElement }) {
 		if (!inAnagramMode || $selectedCategory == null) return;
 		if (resultFound) {
-			window.location.href = googleSearchLink;
+			return;
 		}
 		if (optionsInUse.length < 1) {
 			optionsInUse = $selectedCategory.setA;
@@ -95,7 +95,7 @@
 		if (!inAnagramMode || $selectedCategory == null) return;
 
 		if (resultFound) {
-			window.location.href = googleSearchLink;
+			return;
 		}
 
 		if (optionsInUse.length < 1) {
@@ -122,8 +122,12 @@
 		}
 	}
 
-	function enterAnagramMode() {
+	async function enterAnagramMode() {
 		if ($selectedCategory == null) return;
+
+		const resp = await fetch('/api/search?q=' + searchTerm);
+		loadedImages = (await resp.json()) as ImageResult[];
+
 		inAnagramMode = true;
 		optionsInUse = [];
 	}
@@ -132,6 +136,11 @@
 		if (optionsInUse.length > 1 || !resultFound) return;
 
 		goto('/search/results?q=' + optionsInUse[0]);
+	}
+
+	function goToRealGoogle() {
+		if (optionsInUse.length > 1 || !resultFound) return;
+		window.location.href = googleSearchLink;
 	}
 </script>
 
@@ -187,7 +196,7 @@
 					inAnagramMode && optionsInUse.length < 1 ? ($selectedCategory?.question ?? '') : null}
 				{#if index % 2 === 1}
 					<ImageSearchResult
-						on:click={goToImageViewer}
+						on:click={goToRealGoogle}
 						imageData={imageResult}
 						{titleOverride}
 						boldLetter={activeLetter ?? null}
