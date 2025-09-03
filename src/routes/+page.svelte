@@ -90,6 +90,12 @@
 		searchVisible = true;
 		forceItemsVisible = true;
 	}
+
+	function handleKeydown(event: KeyboardEvent) {
+		if (event.key === 'Enter' && searchResults.length > 0) {
+			selectSearchItem(searchResults[0]);
+		}
+	}
 </script>
 
 <div class="flex h-screen w-full flex-col items-center gap-4 px-1 py-2">
@@ -110,6 +116,7 @@
 				bind:value={searchTerm}
 				type="text"
 				class="flex-1 border-0 text-lg font-semibold text-[var(--text-primary)] outline-0"
+				on:keydown={handleKeydown}
 			/>
 			<i class="ti ti-microphone text-2xl text-[var(--text-secondary)]"></i>
 			<i class="ti ti-camera text-2xl text-[var(--text-secondary)]"></i>

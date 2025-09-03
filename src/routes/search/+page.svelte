@@ -123,7 +123,10 @@
 	}
 
 	async function enterAnagramMode() {
-		if ($selectedCategory == null) return;
+		if ($selectedCategory == null) {
+			goto('/');
+			return;
+		}
 
 		// Preserve the first 8 images
 		const firstEightImages = loadedImages.slice(0, 8);
