@@ -46,7 +46,7 @@ export const MAGIC_CATEGORIES: Record<string, Category> = {
 	},
 	movies: {
 		question: 'Animated or live-action?',
-		setA: ['ToyStory', 'Frozen Movie', 'Coco Pixar', 'Moana Movie', 'Cars Movie', 'Zootopia Movie'],
+		setA: ['ToyStory', 'Frozen', 'Coco', 'Moana', 'Cars', 'Zootopia'],
 		setB: ['Inception', 'Gladiator', 'Titanic', 'Avatar', 'Joker', 'Interstellar'],
 		searchTerms: ['movie', 'film', 'cinema', 'hollywood', 'blockbuster']
 	},
