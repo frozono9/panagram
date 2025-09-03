@@ -57,13 +57,13 @@
 
 		if (category) {
 			$selectedCategory = category;
-			goto('/search?q=' + encodeURIComponent(input));
-			return;
+		} else {
+			// Clear selectedCategory so the search page knows to generate an AI category
+			$selectedCategory = null;
 		}
 
-		// If no category match send to Google Images with the input.
-		// Todo: replace with AI category generation
-		window.location.href = `${googleImageSearchString}${encodeURIComponent(input)}`;
+		// Always go to search page - it will handle AI category generation if needed
+		goto('/search?q=' + encodeURIComponent(input));
 	}
 
 	function openForceSelector() {

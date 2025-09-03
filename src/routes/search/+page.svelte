@@ -5,7 +5,7 @@
 	import GoogleLogo from '$lib/components/googleLogo.svelte';
 	import ImageSearchResult from '$lib/components/imageSearchResult.svelte';
 	import LabsLogo from '$lib/components/labsLogo.svelte';
-	import { googleImageSearchString } from '$lib/data/magicData';
+	import { googleImageSearchString, findCategoryBySearchTerm, type Category, FORCE_ITEMS, MAGIC_CATEGORIES } from '$lib/data/magicData';
 	import { selectedCategory } from '$lib/stores';
 	import { bestSplitLetter } from '$lib/utils/anagram';
 	import { onMount } from 'svelte';
@@ -13,7 +13,8 @@
 	const MAX_IMAGES = 200; // max value is 1200
 	let searchTerm: string | null;
 	let loadedImages: ImageResult[] = [];
-	let imagesLoading = false;
+	let generatingCategory = false;
+	let isAiGeneratedCategory = false;
 
 	// Anagram Variables
 	let inAnagramMode = false;
@@ -35,45 +36,82 @@
 
 		googleSearchLink += encodeURIComponent(searchTerm);
 
-		searchForImages();
+		// Check if we have an existing category or need to generate one
+		initializeCategoryAndSearch();
 
-		async function searchForImages() {
-			// meaning we're using a force
+		async function initializeCategoryAndSearch() {
+			// If no category is selected, try to generate one with AI
 			if ($selectedCategory == null) {
-				const resp = await fetch('/api/search?q=' + searchTerm);
-				loadedImages = (await resp.json()) as ImageResult[];
-				return;
-			}
-
-			imagesLoading = true;
-			const queries = [...$selectedCategory.setA, ...$selectedCategory.setB];
-			const results = await Promise.all(
-				queries.map(async (q) => {
-					const resp = await fetch('/api/search?q=' + q);
-					const data = await resp.json();
-					return data;
-				})
-			);
-
-			let i = 0;
-			let total = 0;
-			let added = true;
-			while (added) {
-				added = false;
-				for (const result of results) {
-					if (i < result.length) {
-						loadedImages.push(result[i]);
-						total++;
-						added = true;
+				// Need to generate a new category using AI
+				generatingCategory = true;
+				try {
+					const response = await fetch('/api/generate-category', {
+						method: 'POST',
+						headers: {
+							'Content-Type': 'application/json'
+						},
+						body: JSON.stringify({ searchTerm })
+					});
+					
+					if (response.ok) {
+						const aiCategory = await response.json() as Category;
+						selectedCategory.set(aiCategory);
+						isAiGeneratedCategory = true; // Mark as AI-generated
+					} else {
+						console.error('Failed to generate category');
+						// Fall back to no category (force mode)
+						isAiGeneratedCategory = false;
 					}
+				} catch (error) {
+					console.error('Error generating category:', error);
+					// Fall back to no category (force mode)
+					isAiGeneratedCategory = false;
+				} finally {
+					generatingCategory = false;
 				}
-				i++;
-				if (total >= MAX_IMAGES) break;
+			} else {
+				// Category was set from homepage, so it's from MAGIC_CATEGORIES
+				isAiGeneratedCategory = false;
 			}
-			loadedImages = [...loadedImages];
-			imagesLoading = false;
+			
+			searchForImages();
 		}
 	});
+
+	async function searchForImages() {
+		// meaning we're using a force
+		if ($selectedCategory == null) {
+			const resp = await fetch('/api/search?q=' + searchTerm);
+			loadedImages = (await resp.json()) as ImageResult[];
+			return;
+		}
+
+		const queries = [...$selectedCategory.setA, ...$selectedCategory.setB];
+		const results = await Promise.all(
+			queries.map(async (q) => {
+				const resp = await fetch('/api/search?q=' + q);
+				const data = await resp.json();
+				return data;
+			})
+		);
+
+		let i = 0;
+		let total = 0;
+		let added = true;
+		while (added) {
+			added = false;
+			for (const result of results) {
+				if (i < result.length) {
+					loadedImages.push(result[i]);
+					total++;
+					added = true;
+				}
+			}
+			i++;
+			if (total >= MAX_IMAGES) break;
+		}
+		loadedImages = [...loadedImages];
+	}
 
 	function leftColumnTouchEnd(event: TouchEvent & { currentTarget: EventTarget & HTMLDivElement }) {
 		if (!inAnagramMode || $selectedCategory == null) return;
@@ -124,7 +162,23 @@
 	}
 
 	async function enterAnagramMode() {
+		// Check if we're in force mode (searching for a FORCE_ITEM or no category available)
+		const isForceMode = FORCE_ITEMS.includes(searchTerm as any) || ($selectedCategory == null && !isAiGeneratedCategory);
+		
+		if (isForceMode) {
+			// Force items should redirect to homepage
+			goto('/');
+			return;
+		}
+
+		// For AI-generated categories or MAGIC_CATEGORIES, we should have a category
 		if ($selectedCategory == null) {
+			// If category is still being generated, wait for it
+			if (generatingCategory) {
+				setTimeout(() => enterAnagramMode(), 100);
+				return;
+			}
+			// If no category could be generated, treat as force mode
 			goto('/');
 			return;
 		}
@@ -146,12 +200,56 @@
 	function goToImageViewer() {
 		if (optionsInUse.length > 1 || !resultFound) return;
 
+		// Build URL with category information for the X button
+		let url = '/search/results?q=' + encodeURIComponent(optionsInUse[0]);
+		
+		if (isAiGeneratedCategory) {
+			// For AI-generated categories, pass the original search term
+			url += '&category=' + encodeURIComponent(searchTerm || '');
+			url += '&ai=true';
+		} else if ($selectedCategory != null) {
+			// For MAGIC_CATEGORIES, find and pass the category key
+			const categoryKey = Object.keys(MAGIC_CATEGORIES).find(key => 
+				MAGIC_CATEGORIES[key] === $selectedCategory
+			);
+			if (categoryKey) {
+				url += '&category=' + encodeURIComponent(categoryKey);
+			}
+		}
+
+		goto(url);
+	}
+
+	function goToCategory() {
+		if (optionsInUse.length > 1 || !resultFound) return;
+
+		// For AI-generated categories, use the original search term
+		if (isAiGeneratedCategory) {
+			goto('/search/results?q=' + encodeURIComponent(searchTerm || ''));
+			return;
+		}
+
+		// For MAGIC_CATEGORIES, find the category key
+		if ($selectedCategory != null) {
+			// Find which MAGIC_CATEGORIES key matches the current category
+			const categoryKey = Object.keys(MAGIC_CATEGORIES).find(key => 
+				MAGIC_CATEGORIES[key] === $selectedCategory
+			);
+			
+			if (categoryKey) {
+				goto('/search/results?q=' + encodeURIComponent(categoryKey));
+				return;
+			}
+		}
+
+		// Fallback to the chosen word if we can't determine the category
 		goto('/search/results?q=' + optionsInUse[0]);
 	}
 
 	function goToRealGoogle() {
 		if (optionsInUse.length > 1 || !resultFound) return;
-		window.location.href = googleSearchLink;
+		// Go to category instead of real Google
+		goToCategory();
 	}
 </script>
 
@@ -200,29 +298,29 @@
 		<p>Shopping</p>
 	</div>
 	<div class="grid flex-1 grid-cols-2 gap-2">
-		<!-- Left column (odd indices) -->
-		<div class="flex flex-col gap-3" on:touchend={leftColumnTouchEnd}>
-			{#each loadedImages as imageResult, index}
-				{@const titleOverride =
-					inAnagramMode && optionsInUse.length < 1 ? ($selectedCategory?.question ?? '') : null}
-				{#if index % 2 === 1}
-					<ImageSearchResult
-						on:click={goToRealGoogle}
-						imageData={imageResult}
-						{titleOverride}
-						boldLetter={activeLetter ?? null}
-					/>
-				{/if}
-			{/each}
-		</div>
+			<!-- Left column (odd indices) -->
+			<div class="flex flex-col gap-3" on:touchend={leftColumnTouchEnd}>
+				{#each loadedImages as imageResult, index}
+					{@const titleOverride =
+						inAnagramMode && optionsInUse.length < 1 ? ($selectedCategory?.question ?? '') : null}
+					{#if index % 2 === 1}
+						<ImageSearchResult
+							on:click={goToRealGoogle}
+							imageData={imageResult}
+							{titleOverride}
+							boldLetter={activeLetter ?? null}
+						/>
+					{/if}
+				{/each}
+			</div>
 
-		<!-- Right column (even indices) -->
-		<div class="flex flex-col gap-3" on:touchend={rightColumnTouchEnd}>
-			{#each loadedImages as imageResult, index}
-				{#if index % 2 === 0}
-					<ImageSearchResult imageData={imageResult} on:click={goToImageViewer} />
-				{/if}
-			{/each}
+			<!-- Right column (even indices) -->
+			<div class="flex flex-col gap-3" on:touchend={rightColumnTouchEnd}>
+				{#each loadedImages as imageResult, index}
+					{#if index % 2 === 0}
+						<ImageSearchResult imageData={imageResult} on:click={goToImageViewer} />
+					{/if}
+				{/each}
+			</div>
 		</div>
-	</div>
 </div>

@@ -10,23 +10,28 @@
 	let searchedImages: ImageResult[] = [];
 	let featuredImage: ImageResult;
 	let searchTerm: string | null = null;
+	let categoryTerm: string | null = null;
+	let isAiGenerated: boolean = false;
 
 	onMount(() => {
 		searchedImages = data.images as ImageResult[];
 		if (searchedImages.length < 1) return;
 		featuredImage = searchedImages.pop() ?? searchedImages[0];
 		searchTerm = $page.url.searchParams.get('q');
+		categoryTerm = $page.url.searchParams.get('category');
+		isAiGenerated = $page.url.searchParams.get('ai') === 'true';
 	});
 
 	function redirectToGoogleSearch() {
-		let googleSearchQuery = searchTerm ?? '';
+		// Use category information if available, otherwise fall back to searchTerm
+		let googleSearchQuery = categoryTerm || searchTerm || '';
 
-		if ($selectedCategory) {
+		// If no category was passed but we have selectedCategory, try to find the key
+		if (!categoryTerm && $selectedCategory && !isAiGenerated) {
 			const categoryKey = Object.entries(MAGIC_CATEGORIES).find(
 				([, value]) => value === $selectedCategory
 			)?.[0];
-
-			googleSearchQuery = categoryKey ?? searchTerm ?? '';
+			googleSearchQuery = categoryKey || searchTerm || '';
 		}
 
 		const query = encodeURIComponent(googleSearchQuery);
