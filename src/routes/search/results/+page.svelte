@@ -15,6 +15,14 @@
 
 	function redirectToGoogleSearch() {
 		if (searchTerm) {
+			// Check if searchTerm is already a category name
+			if (MAGIC_CATEGORIES[searchTerm]) {
+				// It's a predefined category, use it directly
+				const query = encodeURIComponent(searchTerm);
+				window.location.href = `https://www.google.com/search?tbm=isch&q=${query}`;
+				return;
+			}
+			
 			// Find which category the search term belongs to
 			let categoryName = '';
 			for (const [key, category] of Object.entries(MAGIC_CATEGORIES)) {

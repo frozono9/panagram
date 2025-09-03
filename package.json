@@ -28,6 +28,7 @@
 		"vite": "^6.0.0"
 	},
 	"dependencies": {
+		"@google/generative-ai": "^0.24.1",
 		"googlethis": "^1.8.0"
 	}
 }

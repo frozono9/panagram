@@ -18,6 +18,8 @@
 	let inputField: HTMLInputElement;
 	let searchTerm: string = '';
 	let forceItemsVisible = false;
+	let isGeneratingCategory = false;
+	let categoryGenerationError: string | null = null;
 
 	$: if (searchVisible && inputField) {
 		inputField.focus();
@@ -32,10 +34,44 @@
 		return haystacks.some((s) => s.toLowerCase().includes(q));
 	});
 
-	function selectSearchItem(category: string) {
+	$: allSearchOptions = searchTerm.trim() && !forceItemsVisible 
+		? (searchResults.length > 0 ? searchResults : [searchTerm.trim()])
+		: searchResults;
+
+	async function selectSearchItem(category: string) {
 		$selectedCategory = null;
 		if (forceItemsVisible == false) {
-			$selectedCategory = MAGIC_CATEGORIES[category] as Category;
+			// Check if category exists in MAGIC_CATEGORIES
+			if (MAGIC_CATEGORIES[category]) {
+				$selectedCategory = MAGIC_CATEGORIES[category] as Category;
+			} else {
+				// Generate new category using Gemini
+				try {
+					isGeneratingCategory = true;
+					const response = await fetch('/api/generate-category', {
+						method: 'POST',
+						headers: {
+							'Content-Type': 'application/json'
+						},
+						body: JSON.stringify({ searchTerm: category })
+					});
+
+					if (response.ok) {
+						const generatedCategory = await response.json();
+						$selectedCategory = generatedCategory as Category;
+					} else {
+						console.error('Failed to generate category');
+						// Fall back to no category (force mode)
+						$selectedCategory = null;
+					}
+				} catch (error) {
+					console.error('Error generating category:', error);
+					// Fall back to no category (force mode)
+					$selectedCategory = null;
+				} finally {
+					isGeneratingCategory = false;
+				}
+			}
 		}
 		goto('/search?q=' + category);
 	}
@@ -45,16 +81,16 @@
 		forceItemsVisible = true;
 	}
 
-	function handleKeydown(event: KeyboardEvent) {
-		if (event.key === 'Enter' && searchResults.length > 0) {
-			selectSearchItem(searchResults[0]);
+	async function handleKeydown(event: KeyboardEvent) {
+		if (event.key === 'Enter' && allSearchOptions.length > 0) {
+			await selectSearchItem(allSearchOptions[0]);
 		}
 	}
 </script>
 
 <div class="flex h-screen w-full flex-col items-center gap-4 px-1 py-2">
 	{#if searchVisible || forceItemsVisible}
-		{@const options = forceItemsVisible ? FORCE_ITEMS : searchResults}
+		{@const options = forceItemsVisible ? FORCE_ITEMS : allSearchOptions}
 		<nav
 			class="flex w-full flex-row items-center justify-center gap-4 border-0 border-b-1 border-[var(--border-search)] px-2 pb-3 text-2xl"
 		>

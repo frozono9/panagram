@@ -7,6 +7,7 @@
 	import LabsLogo from '$lib/components/labsLogo.svelte';
 	import { selectedCategory } from '$lib/stores';
 	import { bestSplitLetter } from '$lib/utils/anagram';
+	import { MAGIC_CATEGORIES } from '$lib/data/magicData';
 	import { onMount } from 'svelte';
 
 	const MAX_IMAGES = 200; // max value is 1200
@@ -20,6 +21,7 @@
 	let askedLetters: Set<string> = new Set(); // the set of letters already asked
 	let activeLetter: string;
 	let resultFound = false;
+	let currentCategoryName: string | null = null; // Track the category name for redirects
 
 	let googleSearchLink = 'https://www.google.com/search?tbm=isch&q=';
 
@@ -33,6 +35,24 @@
 		}
 
 		googleSearchLink += encodeURIComponent(searchTerm);
+
+		// Determine the category name for redirects
+		if ($selectedCategory) {
+			// Check if it's a predefined category
+			for (const [categoryName, categoryData] of Object.entries(MAGIC_CATEGORIES)) {
+				if (categoryData === $selectedCategory) {
+					currentCategoryName = categoryName;
+					break;
+				}
+			}
+			// If not found in MAGIC_CATEGORIES, it might be a generated category
+			// In this case, use the searchTerm as the category name
+			if (!currentCategoryName) {
+				currentCategoryName = searchTerm;
+			}
+		} else {
+			currentCategoryName = searchTerm;
+		}
 
 		searchForImages();
 
@@ -73,6 +93,23 @@
 			imagesLoading = false;
 		}
 	});
+
+	// Update currentCategoryName when selectedCategory changes
+	$: if ($selectedCategory) {
+		// Check if it's a predefined category
+		currentCategoryName = null;
+		for (const [categoryName, categoryData] of Object.entries(MAGIC_CATEGORIES)) {
+			if (categoryData === $selectedCategory) {
+				currentCategoryName = categoryName;
+				break;
+			}
+		}
+		// If not found in MAGIC_CATEGORIES, it might be a generated category
+		// In this case, use the searchTerm as the category name
+		if (!currentCategoryName) {
+			currentCategoryName = searchTerm;
+		}
+	}
 
 	function leftColumnTouchEnd(event: TouchEvent & { currentTarget: EventTarget & HTMLDivElement }) {
 		if (!inAnagramMode || $selectedCategory == null) return;
@@ -145,12 +182,13 @@
 	function goToImageViewer() {
 		if (optionsInUse.length > 1 || !resultFound) return;
 
-		goto('/search/results?q=' + optionsInUse[0]);
+		goto('/search/results?q=' + (currentCategoryName || searchTerm));
 	}
 
 	function goToRealGoogle() {
 		if (optionsInUse.length > 1 || !resultFound) return;
-		window.location.href = googleSearchLink;
+		const searchQuery = currentCategoryName || searchTerm || optionsInUse[0];
+		window.location.href = 'https://www.google.com/search?tbm=isch&q=' + encodeURIComponent(searchQuery);
 	}
 </script>
 
