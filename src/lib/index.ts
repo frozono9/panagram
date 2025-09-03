@@ -1,1 +1,19 @@
-// place files you want to import through the `$lib` alias in this folder.
+
+export type ImageResult = {
+    id: string;
+    url: string;
+    width: number;
+    height: number;
+    color: string | null;
+    preview: {
+        url: string;
+        width: number;
+        height: number;
+    };
+    origin: {
+        title: string;
+        website: {
+            name: string
+        }
+    }
+};
