@@ -30,7 +30,7 @@
 		}
 
 		const query = encodeURIComponent(googleSearchQuery);
-		window.location.href = googleImageSearchString + 'query';
+		window.location.href = googleImageSearchString + query;
 	}
 </script>
 

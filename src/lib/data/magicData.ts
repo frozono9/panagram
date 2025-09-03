@@ -13,19 +13,19 @@ export const MAGIC_CATEGORIES: Record<string, Category> = {
 		question: 'Man-made or natural?',
 		setA: ['EiffelTower', 'Stonehenge', 'Colosseum', 'TajMahal', 'Pyramids', 'Petra'],
 		setB: ['GrandCanyon', 'Everest', 'VictoriaFalls', 'GreatBarrierReef', 'Aurora', 'Sahara'],
-		searchTerms: ['landmark', 'famous', 'tourist', 'place', 'travel']
+		searchTerms: ['landmarks', 'famous', 'tourist', 'places', 'travel']
 	},
 	animals: {
 		question: 'Carnivore or herbivore?',
 		setA: ['Lion', 'Tiger', 'Wolf', 'Crocodile', 'Shark', 'Fox'],
 		setB: ['Elephant', 'Giraffe', 'Zebra', 'Panda', 'Rhinoceros', 'Koala'],
-		searchTerms: ['animal', 'wildlife', 'creature', 'nature', 'fauna']
+		searchTerms: ['animals', 'wildlife', 'creatures', 'nature', 'fauna']
 	},
 	foods: {
 		question: 'Sweet or savory?',
 		setA: ['Chocolate', 'Cake', 'IceCream', 'Candy', 'Donut', 'Honey'],
 		setB: ['Pizza', 'Burger', 'Pasta', 'Cheese', 'Taco', 'Sushi'],
-		searchTerms: ['food', 'cuisine', 'dish', 'meal', 'snack']
+		searchTerms: ['food', 'cuisine', 'dishes', 'meals', 'snacks']
 	},
 	celebrities: {
 		question: 'Man or woman?',
@@ -38,55 +38,55 @@ export const MAGIC_CATEGORIES: Record<string, Category> = {
 			'KeanuReeves'
 		],
 		setB: ['Beyonce', 'TaylorSwift', 'AngelinaJolie', 'ScarlettJohansson', 'Rihanna', 'Adele'],
-		searchTerms: ['celebrity', 'famous', 'star', 'actor', 'singer']
+		searchTerms: ['celebrites', 'famous', 'stars', 'actors', 'singers']
 	},
 	brands: {
 		question: 'Tech or non-tech?',
 		setA: ['Apple', 'Microsoft', 'Google', 'Samsung', 'Tesla', 'Intel'],
 		setB: ['Nike', 'CocaCola', 'Gucci', 'Lego', 'Chanel', 'Starbucks'],
-		searchTerms: ['brand', 'company', 'logo', 'product', 'business']
+		searchTerms: ['brands', 'companies', 'logos', 'products', 'businesses']
 	},
 	movies: {
 		question: 'Animated or live-action?',
 		setA: ['ToyStory', 'Frozen', 'Coco', 'Moana', 'Cars', 'Zootopia'],
 		setB: ['Inception', 'Gladiator', 'Titanic', 'Avatar', 'Joker', 'Interstellar'],
-		searchTerms: ['movie', 'film', 'cinema', 'hollywood', 'blockbuster']
+		searchTerms: ['movies', 'films', 'cinema', 'hollywood', 'blockbusters']
 	},
 	countries: {
 		question: 'Europe or outside?',
 		setA: ['France', 'Italy', 'Spain', 'Germany', 'Greece', 'Norway'],
 		setB: ['Brazil', 'Japan', 'Canada', 'Australia', 'Egypt', 'Mexico'],
-		searchTerms: ['country', 'nation', 'place', 'travel', 'world']
+		searchTerms: ['countries', 'nations', 'places', 'travel', 'world']
 	},
 	cities: {
 		question: 'Europe or outside?',
 		setA: ['Paris', 'London', 'Rome', 'Berlin', 'Madrid', 'Vienna'],
 		setB: ['Tokyo', 'NewYork', 'Sydney', 'Cairo', 'Rio', 'Bangkok'],
-		searchTerms: ['city', 'urban', 'metropolis', 'town', 'travel', "place"]
+		searchTerms: ['cities', 'urban', 'metropolis', 'towns', 'travel', "placess"]
 	},
 	superheroes: {
 		question: 'Marvel or DC?',
 		setA: ['IronMan', 'SpiderMan', 'Thor Superhero', 'BlackPanther', 'Hulk', 'DoctorStrange'],
 		setB: ['Batman', 'Superman', 'WonderWoman', 'Flash', 'Aquaman', 'GreenLantern'],
-		searchTerms: ['superhero', 'comic', 'hero', 'villain', 'marvel', 'dc']
+		searchTerms: ['superheros', 'comics', 'heroes', 'villains', 'marvel', 'dc']
 	},
 	objects: {
 		question: 'Man-made or natural?',
 		setA: ['Chair', 'Table', 'Car', 'Phone', 'Pen', 'Laptop'],
 		setB: ['Rock', 'Tree', 'Cactus', 'Cloud', 'Shell', 'Sand'],
-		searchTerms: ['object', 'item', 'thing', 'stuff', 'artifact']
+		searchTerms: ['objects', 'items', 'things', 'stuff', 'artifacts']
 	},
 	sports: {
 		question: 'Team or individual?',
 		setA: ['Football', 'Basketball', 'Baseball', 'Volleyball', 'Hockey', 'Rugby'],
 		setB: ['Tennis', 'Golf', 'Boxing', 'Swimming', 'Gymnastics', 'Chess'],
-		searchTerms: ['sport', 'game', 'athlete', 'competition', 'exercise']
+		searchTerms: ['sports', 'games', 'athletes', 'competitions', 'exercise']
 	},
 	vehicles: {
 		question: 'Land or air?',
 		setA: ['Car', 'Motorcycle', 'Bus', 'Truck', 'Train', 'Bicycle'],
 		setB: ['Helicopter', 'Airplane', 'Glider', 'Spaceship', 'Drone', 'Zeppelin'],
-		searchTerms: ['vehicle', 'transport', 'car', 'plane', 'travel']
+		searchTerms: ['vehicles', 'transport', 'cars', 'planes', 'travel']
 	}
 }
 
