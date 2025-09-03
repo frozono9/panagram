@@ -9,7 +9,10 @@
 	const dispatch = createEventDispatcher();
 </script>
 
-<button class="image-result flex flex-col overflow-hidden" on:click={() => dispatch('click')}>
+<button
+	class="image-result flex flex-col overflow-hidden"
+	on:click|preventDefault|stopPropagation={() => dispatch('click')}
+>
 	<img
 		src={imageData.preview.url}
 		alt={imageData.origin.title}
@@ -19,5 +22,7 @@
 		<span class="text-left font-bold capitalize">{boldLetter ?? ''}</span>
 		{titleOverride ?? imageData.origin.title}
 	</p>
-	<p class="truncate text-xs text-[var(--text-primary)]">{imageData.origin.website.name}</p>
+	<p class="truncate text-left text-xs text-[var(--text-primary)]">
+		{imageData.origin.website.name}
+	</p>
 </button>
