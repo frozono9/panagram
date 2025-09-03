@@ -127,13 +127,13 @@
 
 		// Preserve the first 8 images
 		const firstEightImages = loadedImages.slice(0, 8);
-		
+
 		// Get new random images for the rest
 		const resp = await fetch('/api/search?q=' + searchTerm);
 		const newImages = (await resp.json()) as ImageResult[];
-		
-		// Combine first 8 with new random images (skip first 8 from new results)
-		loadedImages = [...firstEightImages, ...newImages.slice(8)];
+
+		// Combine first 8 with new random images
+		loadedImages = [...firstEightImages, ...newImages];
 
 		inAnagramMode = true;
 		optionsInUse = [];

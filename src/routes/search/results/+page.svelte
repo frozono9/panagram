@@ -3,32 +3,34 @@
 	import { onMount } from 'svelte';
 	import { page } from '$app/stores';
 	import { MAGIC_CATEGORIES } from '$lib/data/magicData';
+	import ImageSearchResult from '$lib/components/imageSearchResult.svelte';
+	import { selectedCategory } from '$lib/stores.js';
 
 	export let data;
 	let searchedImages: ImageResult[] = [];
+	let featuredImage: ImageResult;
 	let searchTerm: string | null = null;
 
 	onMount(() => {
 		searchedImages = data.images as ImageResult[];
+		if (searchedImages.length < 1) return;
+		featuredImage = searchedImages.pop() ?? searchedImages[0];
 		searchTerm = $page.url.searchParams.get('q');
 	});
 
 	function redirectToGoogleSearch() {
-		if (searchTerm) {
-			// Find which category the search term belongs to
-			let categoryName = '';
-			for (const [key, category] of Object.entries(MAGIC_CATEGORIES)) {
-				if (category.setA.includes(searchTerm) || category.setB.includes(searchTerm)) {
-					categoryName = key;
-					break;
-				}
-			}
-			
-			// If found in a category, use the category name, otherwise use the search term
-			const searchQuery = categoryName || searchTerm;
-			const query = encodeURIComponent(searchQuery);
-			window.location.href = `https://www.google.com/search?tbm=isch&q=${query}`;
+		let googleSearchQuery = searchTerm ?? '';
+
+		if ($selectedCategory) {
+			const categoryKey = Object.entries(MAGIC_CATEGORIES).find(
+				([, value]) => value === $selectedCategory
+			)?.[0];
+
+			googleSearchQuery = categoryKey ?? searchTerm ?? '';
 		}
+
+		const query = encodeURIComponent(googleSearchQuery);
+		window.location.href = `https://www.google.com/search?tbm=isch&q=${query}`;
 	}
 </script>
 
@@ -37,26 +39,31 @@
 		<nav class="flex h-12 w-full flex-row items-center justify-center gap-2 px-4 py-2">
 			<span class="aspect-square h-full overflow-hidden rounded-full bg-white">
 				<img
-					src={'https://www.google.com/s2/favicons?domain=' +
-						searchedImages[0].origin.website.domain}
-					alt={searchedImages[0].origin.website.name}
+					src={'https://www.google.com/s2/favicons?domain=' + featuredImage.origin.website.domain}
+					alt={featuredImage.origin.website.name}
 					class="w-full bg-cover"
 				/>
 			</span>
-			<p class="flex-1 font-semibold">{searchedImages[0].origin.website.name}</p>
+			<a href={featuredImage.origin.website.url} class="flex-1 font-semibold"
+				>{featuredImage.origin.website.name}</a
+			>
 			<div class="flex flex-row items-center gap-2 text-2xl text-[var(--text-secondary)]">
-				<button class="hover:bg-gray-100 rounded-full p-1" aria-label="More options">
+				<button class="rounded-full p-1 hover:bg-gray-100" aria-label="More options">
 					<i class="ti ti-dots-vertical"></i>
 				</button>
-				<button on:click={redirectToGoogleSearch} class="hover:bg-gray-100 rounded-full p-1" aria-label="Search on Google">
+				<button
+					on:click={redirectToGoogleSearch}
+					class="rounded-full p-1 hover:bg-gray-100"
+					aria-label="Search on Google"
+				>
 					<i class="ti ti-x"></i>
 				</button>
 			</div>
 		</nav>
-		<img src={searchedImages[0].url} alt={searchedImages[0].origin.title} class="h-auto w-full" />
+		<img src={searchedImages[0].url} alt={featuredImage.origin.title} class="h-auto w-full" />
 		<div class="flex flex-row items-center justify-between gap-8 p-3">
 			<div class="flex flex-col items-start text-left">
-				<p class="font-semibold">{searchedImages[0].origin.title}</p>
+				<p class="font-semibold">{featuredImage.origin.title}</p>
 				<p class="text-xs font-semibold text-[var(--text-secondary)]">
 					Images may be subject to copyright. <span class="font-bold">Learn More</span>
 				</p>
@@ -73,6 +80,12 @@
 			<button class="w-full rounded-full bg-[var(--bg-tertiary)]">
 				<i class="ti ti-bookmark"></i> Save</button
 			>
+		</div>
+		<br />
+		<div class="grid grid-cols-2 gap-2 px-2">
+			{#each searchedImages as imageData}
+				<ImageSearchResult {imageData} />
+			{/each}
 		</div>
 	</div>
 {/if}
