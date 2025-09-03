@@ -13,7 +13,9 @@ export type ImageResult = {
     origin: {
         title: string;
         website: {
-            name: string
+            name: string,
+            url: string,
+            domain: string
         }
     }
 };

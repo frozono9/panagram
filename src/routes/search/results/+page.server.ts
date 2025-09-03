@@ -1,3 +1,4 @@
+import type { ImageResult } from '$lib';
 import { redirect, type Load } from '@sveltejs/kit';
 import google from 'googlethis';
 
@@ -7,8 +8,7 @@ export const load: Load = async ({ url }) => {
     if (searchTerm == null)
         throw redirect(300, "/");
 
-    const images = await google.image(searchTerm, { safe: true });
-    const matchingImageId = images[0].id;
+    const images = await google.image(searchTerm, { safe: true }) as unknown as ImageResult[]
 
-    throw redirect(303, `https://www.google.com/search?tbm=isch&q=${searchTerm}&imgrc=${matchingImageId}`)
+    return { images };
 }

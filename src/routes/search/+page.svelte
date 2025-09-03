@@ -21,13 +21,18 @@
 	let activeLetter: string;
 	let resultFound = false;
 
+	let googleSearchLink = 'https://www.google.com/search?tbm=isch&q=';
+
 	onMount(() => {
 		const url = page.url;
 		searchTerm = url.searchParams.get('q') ?? null;
+
 		if (searchTerm == null) {
 			goto('/', { replaceState: true });
 			return;
 		}
+
+		googleSearchLink += encodeURIComponent(searchTerm);
 
 		searchForImages();
 
@@ -72,7 +77,7 @@
 	function leftColumnTouchEnd(event: TouchEvent & { currentTarget: EventTarget & HTMLDivElement }) {
 		if (!inAnagramMode || $selectedCategory == null) return;
 		if (resultFound) {
-			goto('/search/results?q=' + optionsInUse[0]);
+			window.location.href = googleSearchLink;
 		}
 		if (optionsInUse.length < 1) {
 			optionsInUse = $selectedCategory.setA;
@@ -90,7 +95,7 @@
 		if (!inAnagramMode || $selectedCategory == null) return;
 
 		if (resultFound) {
-			goto('/search/results?q=' + optionsInUse[0]);
+			window.location.href = googleSearchLink;
 		}
 
 		if (optionsInUse.length < 1) {
@@ -113,7 +118,7 @@
 	function checkProgressiveAnagram() {
 		if (optionsInUse.length < 2) {
 			resultFound = true;
-			activeLetter = '✓';
+			activeLetter = '✓ ' + optionsInUse[0];
 		}
 	}
 
@@ -121,6 +126,12 @@
 		if ($selectedCategory == null) return;
 		inAnagramMode = true;
 		optionsInUse = [];
+	}
+
+	function goToImageViewer() {
+		if (optionsInUse.length > 1 || !resultFound) return;
+
+		goto('/search/results?q=' + optionsInUse[0]);
 	}
 </script>
 
@@ -176,6 +187,7 @@
 					inAnagramMode && optionsInUse.length < 1 ? ($selectedCategory?.question ?? '') : null}
 				{#if index % 2 === 1}
 					<ImageSearchResult
+						on:click={goToImageViewer}
 						imageData={imageResult}
 						{titleOverride}
 						boldLetter={activeLetter ?? null}
@@ -188,7 +200,7 @@
 		<div class="flex flex-col gap-3" on:touchend={rightColumnTouchEnd}>
 			{#each loadedImages as imageResult, index}
 				{#if index % 2 === 0}
-					<ImageSearchResult imageData={imageResult} />
+					<ImageSearchResult imageData={imageResult} on:click={goToImageViewer} />
 				{/if}
 			{/each}
 		</div>

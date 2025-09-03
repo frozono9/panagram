@@ -2,13 +2,8 @@
 	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
 	import GoogleLogo from '$lib/components/googleLogo.svelte';
-	import {
-		FORCE_ITEMS,
-		MAGIC_CATEGORIES,
-		type Category,
-		type ForceItem
-	} from '$lib/data/magicData';
-	import { forceSelection, selectedCategory } from '$lib/stores';
+	import { FORCE_ITEMS, MAGIC_CATEGORIES, type Category } from '$lib/data/magicData';
+	import { selectedCategory } from '$lib/stores';
 	import { onMount } from 'svelte';
 
 	onMount(() => {
@@ -29,18 +24,17 @@
 	}
 
 	$: searchResults = Object.keys(MAGIC_CATEGORIES).filter((category) => {
-		const { question, optionA, optionB, setA, setB, searchTerms } = MAGIC_CATEGORIES[category]; // ok, has string index signature
+		const { question, setA, setB, searchTerms } = MAGIC_CATEGORIES[category]; // ok, has string index signature
 
-		const haystacks = [category, question, optionA, optionB, ...setA, ...setB, ...searchTerms];
+		const haystacks = [category, question, ...setA, ...setB, ...searchTerms];
 
 		const q = searchTerm.toLowerCase();
 		return haystacks.some((s) => s.toLowerCase().includes(q));
 	});
 
 	function selectSearchItem(category: string) {
-		if (forceItemsVisible) {
-			$forceSelection = category as ForceItem;
-		} else {
+		$selectedCategory = null;
+		if (forceItemsVisible == false) {
 			$selectedCategory = MAGIC_CATEGORIES[category] as Category;
 		}
 		goto('/search?q=' + category);
