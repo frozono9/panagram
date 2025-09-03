@@ -125,8 +125,15 @@
 	async function enterAnagramMode() {
 		if ($selectedCategory == null) return;
 
+		// Preserve the first 8 images
+		const firstEightImages = loadedImages.slice(0, 8);
+		
+		// Get new random images for the rest
 		const resp = await fetch('/api/search?q=' + searchTerm);
-		loadedImages = (await resp.json()) as ImageResult[];
+		const newImages = (await resp.json()) as ImageResult[];
+		
+		// Combine first 8 with new random images (skip first 8 from new results)
+		loadedImages = [...firstEightImages, ...newImages.slice(8)];
 
 		inAnagramMode = true;
 		optionsInUse = [];
@@ -178,7 +185,7 @@
 		</div>
 	</button>
 	<div
-		class="link-list flex h-8 w-fit shrink-0 flex-row flex-nowrap items-center justify-start gap-4 overflow-x-hidden overflow-y-visible pl-10 font-semibold whitespace-nowrap text-[var(--text-secondary)]"
+		class="link-list flex h-8 w-full shrink-0 flex-row flex-nowrap items-center justify-start gap-4 overflow-x-hidden overflow-y-visible px-4 font-semibold whitespace-nowrap text-[var(--text-secondary)]"
 	>
 		<p>AI Mode</p>
 		<p>All</p>

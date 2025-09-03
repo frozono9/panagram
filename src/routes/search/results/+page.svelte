@@ -1,12 +1,35 @@
 <script lang="ts">
 	import type { ImageResult } from '$lib';
 	import { onMount } from 'svelte';
+	import { page } from '$app/stores';
+	import { MAGIC_CATEGORIES } from '$lib/data/magicData';
 
 	export let data;
 	let searchedImages: ImageResult[] = [];
+	let searchTerm: string | null = null;
+
 	onMount(() => {
 		searchedImages = data.images as ImageResult[];
+		searchTerm = $page.url.searchParams.get('q');
 	});
+
+	function redirectToGoogleSearch() {
+		if (searchTerm) {
+			// Find which category the search term belongs to
+			let categoryName = '';
+			for (const [key, category] of Object.entries(MAGIC_CATEGORIES)) {
+				if (category.setA.includes(searchTerm) || category.setB.includes(searchTerm)) {
+					categoryName = key;
+					break;
+				}
+			}
+			
+			// If found in a category, use the category name, otherwise use the search term
+			const searchQuery = categoryName || searchTerm;
+			const query = encodeURIComponent(searchQuery);
+			window.location.href = `https://www.google.com/search?tbm=isch&q=${query}`;
+		}
+	}
 </script>
 
 {#if searchedImages.length > 0}
@@ -21,15 +44,19 @@
 				/>
 			</span>
 			<p class="flex-1 font-semibold">{searchedImages[0].origin.website.name}</p>
-			<div class="flex flex-row gap-4 text-2xl text-[var(--text-secondary)]">
-				<i class="ti ti-dots-vertical"></i>
-				<i class="ti ti-x"></i>
+			<div class="flex flex-row items-center gap-2 text-2xl text-[var(--text-secondary)]">
+				<button class="hover:bg-gray-100 rounded-full p-1" aria-label="More options">
+					<i class="ti ti-dots-vertical"></i>
+				</button>
+				<button on:click={redirectToGoogleSearch} class="hover:bg-gray-100 rounded-full p-1" aria-label="Search on Google">
+					<i class="ti ti-x"></i>
+				</button>
 			</div>
 		</nav>
 		<img src={searchedImages[0].url} alt={searchedImages[0].origin.title} class="h-auto w-full" />
 		<div class="flex flex-row items-center justify-between gap-8 p-3">
-			<div class="flex flex-col">
-				<p class="truncate font-semibold">{searchedImages[0].origin.title}</p>
+			<div class="flex flex-col items-start text-left">
+				<p class="font-semibold">{searchedImages[0].origin.title}</p>
 				<p class="text-xs font-semibold text-[var(--text-secondary)]">
 					Images may be subject to copyright. <span class="font-bold">Learn More</span>
 				</p>
