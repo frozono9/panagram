@@ -2,32 +2,16 @@
 	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
 	import GoogleLogo from '$lib/components/googleLogo.svelte';
-	import { FORCE_ITEMS, MAGIC_CATEGORIES, type Category } from '$lib/data/magicData';
+	import {
+		findCategoryBySearchTerm,
+		FORCE_ITEMS,
+		getCategoryByKeyInsensitive,
+		googleImageSearchString,
+		MAGIC_CATEGORIES,
+		type Category
+	} from '$lib/data/magicData';
 	import { selectedCategory } from '$lib/stores';
 	import { onMount } from 'svelte';
-	import Fuse from 'fuse.js';
-
-	// AUTOCOMPLETE HANDLING
-	type AutocompleteItem = { key: string } & Category;
-
-	const ITEMS: AutocompleteItem[] = Object.entries(MAGIC_CATEGORIES).map(([key, v]) => ({
-		key,
-		...v
-	}));
-
-	const fuse = new Fuse(ITEMS, {
-		includeScore: true,
-		threshold: 0.34,
-		ignoreLocation: true,
-		minMatchCharLength: 1,
-		keys: [
-			{ name: 'key', weight: 0.5 }, // category name
-			{ name: 'searchTerms', weight: 0.25 },
-			{ name: 'setA', weight: 0.15 },
-			{ name: 'setB', weight: 0.15 },
-			{ name: 'question', weight: 0.1 }
-		]
-	});
 
 	onMount(() => {
 		const url = page.url;
@@ -35,6 +19,7 @@
 		if (search != null) {
 			searchVisible = true;
 		}
+		handleAutocomplete();
 	});
 
 	let searchVisible = false;
@@ -45,45 +30,40 @@
 	let inputField: HTMLInputElement;
 	let searchTerm: string = '';
 	let forceItemsVisible = false;
+	let searchResults: string[] = [];
 
-	let debounced = '';
-	let debounceTimeout: ReturnType<typeof setTimeout>;
-
-	$: {
-		clearTimeout(debounceTimeout);
-		debounceTimeout = setTimeout(() => (debounced = searchTerm.trim()), 120);
+	async function handleAutocomplete() {
+		if (searchTerm == '') {
+			searchResults = Object.keys(MAGIC_CATEGORIES);
+			return;
+		}
+		const r = await fetch('/api/autocomplete?search=' + searchTerm);
+		const json = await r.json();
+		searchResults = json as string[];
 	}
 
-	$: searchResults = (() => {
-		if (!debounced) {
-			// default suggestions when empty
-			return ITEMS.map((i) => i.key);
+	function selectSearchItem(raw: string) {
+		const input = raw.trim();
+		if (!input) return;
+
+		// If showing the "force items" palette, just route with the raw input.
+		if (forceItemsVisible) {
+			goto('/search?q=' + encodeURIComponent(input));
+			return;
 		}
 
-		const q = debounced.toLowerCase();
-		const prefix = ITEMS.filter((i) => i.key.toLowerCase().startsWith(q)).map((i) => i.key);
+		// Try exact key match first (case-insensitive), then fallback to search-term match.
+		const category = getCategoryByKeyInsensitive(input) ?? findCategoryBySearchTerm(input);
 
-		const fuzzy = fuse.search(debounced).map((r) => r.item.key);
-		const seen = new Set<string>();
-		const merged = [...prefix, ...fuzzy].filter((k) => (seen.has(k) ? false : (seen.add(k), true)));
-		return merged.slice(0, 8);
-	})();
-
-	// $: searchResults = Object.keys(MAGIC_CATEGORIES).filter((category) => {
-	// 	const { question, setA, setB, searchTerms } = MAGIC_CATEGORIES[category]; // ok, has string index signature
-
-	// 	const haystacks = [category, question, ...setA, ...setB, ...searchTerms];
-
-	// 	const q = searchTerm.toLowerCase();
-	// 	return haystacks.some((s) => s.toLowerCase().includes(q));
-	// });
-
-	function selectSearchItem(category: string) {
-		$selectedCategory = null;
-		if (forceItemsVisible == false) {
-			$selectedCategory = MAGIC_CATEGORIES[category] as Category;
+		if (category) {
+			$selectedCategory = category;
+			goto('/search?q=' + encodeURIComponent(input));
+			return;
 		}
-		goto('/search?q=' + category);
+
+		// If no category match send to Google Images with the input.
+		// Todo: replace with AI category generation
+		window.location.href = `${googleImageSearchString}${encodeURIComponent(input)}`;
 	}
 
 	function openForceSelector() {
@@ -114,6 +94,7 @@
 			<input
 				bind:this={inputField}
 				bind:value={searchTerm}
+				on:input={handleAutocomplete}
 				type="text"
 				class="flex-1 border-0 text-lg font-semibold text-[var(--text-primary)] outline-0"
 				on:keydown={handleKeydown}

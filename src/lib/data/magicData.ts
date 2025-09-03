@@ -5,6 +5,8 @@ export type Category = {
 	searchTerms: string[];
 };
 
+export const googleImageSearchString = "https://www.google.com/search?tbm=isch&q=";
+
 // Magic trick data structure with progressive anagrams
 export const MAGIC_CATEGORIES: Record<string, Category> = {
 	landmarks: {
@@ -101,3 +103,26 @@ export const FORCE_ITEMS = [
 ] as const;
 
 export type ForceItem = typeof FORCE_ITEMS[number];
+
+export function findCategoryBySearchTerm(query: string): Category | null {
+	const q = query.toLowerCase();
+
+	const match = Object.entries(MAGIC_CATEGORIES).find(([key, category]) => {
+		const haystacks = [
+			key,
+			category.question,
+			...category.setA,
+			...category.setB,
+			...category.searchTerms
+		];
+		return haystacks.some(s => s.toLowerCase().includes(q));
+	});
+
+	return match ? match[1] : null;
+}
+
+export function getCategoryByKeyInsensitive(key: string): Category | null {
+	const k = key.trim().toLowerCase();
+	// Keys in MAGIC_CATEGORIES are lowercase in your data
+	return (MAGIC_CATEGORIES as Record<string, Category>)[k] ?? null;
+}

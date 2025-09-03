@@ -2,7 +2,7 @@
 	import type { ImageResult } from '$lib';
 	import { onMount } from 'svelte';
 	import { page } from '$app/stores';
-	import { MAGIC_CATEGORIES } from '$lib/data/magicData';
+	import { googleImageSearchString, MAGIC_CATEGORIES } from '$lib/data/magicData';
 	import ImageSearchResult from '$lib/components/imageSearchResult.svelte';
 	import { selectedCategory } from '$lib/stores.js';
 
@@ -30,7 +30,7 @@
 		}
 
 		const query = encodeURIComponent(googleSearchQuery);
-		window.location.href = `https://www.google.com/search?tbm=isch&q=${query}`;
+		window.location.href = googleImageSearchString + 'query';
 	}
 </script>
 

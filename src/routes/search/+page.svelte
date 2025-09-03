@@ -5,6 +5,7 @@
 	import GoogleLogo from '$lib/components/googleLogo.svelte';
 	import ImageSearchResult from '$lib/components/imageSearchResult.svelte';
 	import LabsLogo from '$lib/components/labsLogo.svelte';
+	import { googleImageSearchString } from '$lib/data/magicData';
 	import { selectedCategory } from '$lib/stores';
 	import { bestSplitLetter } from '$lib/utils/anagram';
 	import { onMount } from 'svelte';
@@ -21,7 +22,7 @@
 	let activeLetter: string;
 	let resultFound = false;
 
-	let googleSearchLink = 'https://www.google.com/search?tbm=isch&q=';
+	let googleSearchLink = googleImageSearchString;
 
 	onMount(() => {
 		const url = page.url;
