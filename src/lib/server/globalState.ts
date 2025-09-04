@@ -1,5 +1,10 @@
 // Server-side global state management for Vercel deployment
-// Using a simple approach that works reliably on Vercel
+// Uses file-based persistence to work across serverless function invocations
+
+import { writeFileSync, readFileSync, existsSync } from 'fs';
+import { join } from 'path';
+
+const STATE_FILE = '/tmp/app-state.json';
 
 interface AppState {
     latestSearchedCategory: string;
@@ -7,25 +12,44 @@ interface AppState {
     triggerTimestamp: number;
 }
 
-// Use environment variable or simple memory storage
-let globalAppState: AppState = {
-    latestSearchedCategory: "No category searched yet",
-    triggerState: false,
-    triggerTimestamp: 0
-};
-
 class GlobalState {
     private getState(): AppState {
-        // Check if trigger should be reset (more than 2 seconds old)
-        if (globalAppState.triggerState && Date.now() - globalAppState.triggerTimestamp > 2000) {
-            globalAppState.triggerState = false;
+        try {
+            if (existsSync(STATE_FILE)) {
+                const data = readFileSync(STATE_FILE, 'utf-8');
+                const state = JSON.parse(data) as AppState;
+                
+                // Check if trigger should be reset (more than 2 seconds old)
+                if (state.triggerState && Date.now() - state.triggerTimestamp > 2000) {
+                    state.triggerState = false;
+                    this.saveState(state);
+                }
+                
+                return state;
+            }
+        } catch (error) {
+            console.error('Error reading state file:', error);
         }
         
-        return { ...globalAppState };
+        return {
+            latestSearchedCategory: "No category searched yet",
+            triggerState: false,
+            triggerTimestamp: 0
+        };
+    }
+
+    private saveState(state: AppState): void {
+        try {
+            writeFileSync(STATE_FILE, JSON.stringify(state, null, 2));
+        } catch (error) {
+            console.error('Error saving state file:', error);
+        }
     }
 
     setLatestSearchedCategory(category: string) {
-        globalAppState.latestSearchedCategory = category || "No category searched yet";
+        const state = this.getState();
+        state.latestSearchedCategory = category || "No category searched yet";
+        this.saveState(state);
     }
 
     getLatestSearchedCategory(): string {
@@ -39,17 +63,10 @@ class GlobalState {
     }
 
     activateTrigger() {
-        globalAppState.triggerState = true;
-        globalAppState.triggerTimestamp = Date.now();
-    }
-
-    // Reset state (useful for testing)
-    reset() {
-        globalAppState = {
-            latestSearchedCategory: "No category searched yet",
-            triggerState: false,
-            triggerTimestamp: 0
-        };
+        const state = this.getState();
+        state.triggerState = true;
+        state.triggerTimestamp = Date.now();
+        this.saveState(state);
     }
 }
 

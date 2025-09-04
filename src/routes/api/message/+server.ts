@@ -1,12 +1,11 @@
 import { type RequestHandler } from "@sveltejs/kit";
-import { getCategory } from "../../../lib/server/simpleState.js";
+import { globalState } from "../../../lib/server/globalState.js";
 
 export const GET: RequestHandler = async () => {
-    const category = getCategory();
+    const category = globalState.getLatestSearchedCategory();
     return new Response(category, {
         headers: {
-            'Content-Type': 'text/plain',
-            'Cache-Control': 'no-cache, no-store, must-revalidate'
+            'Content-Type': 'text/plain'
         }
     });
 };

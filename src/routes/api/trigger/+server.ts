@@ -1,12 +1,11 @@
 import { type RequestHandler } from "@sveltejs/kit";
-import { getTriggerState } from "../../../lib/server/simpleState.js";
+import { globalState } from "../../../lib/server/globalState.js";
 
 export const GET: RequestHandler = async () => {
-    const triggered = getTriggerState();
+    const triggered = globalState.getTriggerState();
     return new Response(triggered.toString(), {
         headers: {
-            'Content-Type': 'text/plain',
-            'Cache-Control': 'no-cache, no-store, must-revalidate'
+            'Content-Type': 'text/plain'
         }
     });
 };
