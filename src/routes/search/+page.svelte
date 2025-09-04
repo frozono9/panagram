@@ -293,10 +293,64 @@
 		showAllView = false;
 	}
 
+	// Function to get the message URL with current category parameters
+	function getMessageUrl(): string {
+		let url = '/api/message';
+		const params = new URLSearchParams();
+
+		if (searchTerm) {
+			params.set('q', searchTerm);
+		}
+
+		if (isAiGeneratedCategory) {
+			params.set('ai', 'true');
+		} else if ($selectedCategory != null) {
+			// Find the category key for MAGIC_CATEGORIES
+			const categoryKey = Object.keys(MAGIC_CATEGORIES).find(key =>
+				MAGIC_CATEGORIES[key] === $selectedCategory
+			);
+			if (categoryKey) {
+				params.set('category', categoryKey);
+			}
+		}
+
+		const paramString = params.toString();
+		return paramString ? `${url}?${paramString}` : url;
+	}
+
+	// Function to get the trigger URL
+	function getTriggerUrl(): string {
+		return '/api/trigger';
+	}
+
+	// Function to get current category info for external access
+	function getCurrentCategoryInfo() {
+		const info = {
+			searchTerm,
+			isAiGenerated: isAiGeneratedCategory,
+			categoryKey: null as string | null
+		};
+
+		if (!isAiGeneratedCategory && $selectedCategory != null) {
+			info.categoryKey = Object.keys(MAGIC_CATEGORIES).find(key =>
+				MAGIC_CATEGORIES[key] === $selectedCategory
+			) || null;
+		}
+
+		return info;
+	}
+
+	// Make functions available globally for external access
+	if (typeof window !== 'undefined') {
+		(window as any).getCurrentCategoryInfo = getCurrentCategoryInfo;
+		(window as any).getMessageUrl = getMessageUrl;
+		(window as any).getTriggerUrl = getTriggerUrl;
+	}
+
 	// Function to update the server-side category store
 	async function updateServerCategory() {
 		if (!searchTerm) return;
-		
+
 		try {
 			await fetch('/api/update-category', {
 				method: 'POST',
@@ -317,8 +371,28 @@
 	// Function to trigger search activity
 	async function triggerSearchActivity() {
 		try {
-			await fetch('/api/trigger-activity', {
-				method: 'POST'
+			const headers: Record<string, string> = {
+				'Content-Type': 'application/json'
+			};
+
+			// Add category information to headers for external API access
+			if (searchTerm) {
+				headers['x-search-term'] = searchTerm;
+			}
+			if (isAiGeneratedCategory) {
+				headers['x-ai-generated'] = 'true';
+			} else if ($selectedCategory != null) {
+				const categoryKey = Object.keys(MAGIC_CATEGORIES).find(key =>
+					MAGIC_CATEGORIES[key] === $selectedCategory
+				);
+				if (categoryKey) {
+					headers['x-category-key'] = categoryKey;
+				}
+			}
+
+			await fetch('/api/trigger', {
+				method: 'POST',
+				headers
 			});
 		} catch (error) {
 			console.error('Failed to trigger search activity:', error);
