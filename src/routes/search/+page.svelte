@@ -77,43 +77,7 @@
 				isAiGeneratedCategory = false;
 			}
 			
-			// Update the latest searched category for the /api/message endpoint
-			await updateSearchedCategory();
-			
 			searchForImages();
-		}
-
-		async function updateSearchedCategory() {
-			let categoryName = '';
-			
-			if ($selectedCategory != null) {
-				// Find the category name from MAGIC_CATEGORIES
-				for (const [key, value] of Object.entries(MAGIC_CATEGORIES)) {
-					if (value === $selectedCategory) {
-						categoryName = key;
-						break;
-					}
-				}
-				// If not found in MAGIC_CATEGORIES, it's AI-generated
-				if (!categoryName && isAiGeneratedCategory) {
-					categoryName = searchTerm || 'AI Generated Category';
-				}
-			} else {
-				// Use the search term if no category is available
-				categoryName = searchTerm || '';
-			}
-			
-			try {
-				await fetch('/api/update-search-category', {
-					method: 'POST',
-					headers: {
-						'Content-Type': 'application/json'
-					},
-					body: JSON.stringify({ category: categoryName })
-				});
-			} catch (error) {
-				console.error('Failed to update search category:', error);
-			}
 		}
 	});
 
