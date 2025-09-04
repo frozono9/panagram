@@ -23,6 +23,9 @@
 	let activeLetter: string;
 	let resultFound = false;
 
+	// View state
+	let showAllView = false; // true for "All" view, false for "Images" view
+
 	let googleSearchLink = googleImageSearchString;
 
 	onMount(() => {
@@ -272,6 +275,14 @@
 			window.location.href = googleImageSearchString + encodeURIComponent(searchQuery);
 		}
 	}
+
+	function showAllOptions() {
+		showAllView = true;
+	}
+
+	function showImagesView() {
+		showAllView = false;
+	}
 </script>
 
 <div
@@ -311,14 +322,87 @@
 		class="link-list flex h-8 w-full shrink-0 flex-row flex-nowrap items-center justify-start gap-4 overflow-x-hidden overflow-y-visible px-4 font-semibold whitespace-nowrap text-[var(--text-secondary)]"
 	>
 		<p>AI Mode</p>
-		<p>All</p>
-		<p class="text-[var(--text-primary)] underline decoration-2 underline-offset-6">Images</p>
+		<button 
+			class="{showAllView ? 'text-[var(--text-primary)] underline decoration-2 underline-offset-6' : ''}"
+			on:click={showAllOptions}
+		>
+			All
+		</button>
+		<button 
+			class="{!showAllView ? 'text-[var(--text-primary)] underline decoration-2 underline-offset-6' : ''}"
+			on:click={showImagesView}
+		>
+			Images
+		</button>
 		<p>Videos</p>
 		<p>Books</p>
 		<p>News</p>
 		<p>Shopping</p>
 	</div>
-	<div class="grid flex-1 grid-cols-2 gap-2">
+	
+	{#if showAllView && $selectedCategory != null}
+		<!-- All options view - show the 12 possible options -->
+		<div class="flex-1 w-full px-4">
+			<div class="mb-4">
+				<h2 class="text-lg font-semibold text-[var(--text-primary)] mb-2">
+					{$selectedCategory.question}
+				</h2>
+				<p class="text-sm text-[var(--text-secondary)]">
+					Choose from {$selectedCategory.setA.length + $selectedCategory.setB.length} options:
+				</p>
+			</div>
+			
+			<div class="grid grid-cols-1 gap-3">
+				<!-- Set A options -->
+				<div class="space-y-2">
+					<h3 class="text-md font-medium text-[var(--text-primary)]">
+						{$selectedCategory.question.split(' or ')[0]}
+					</h3>
+					<div class="grid grid-cols-2 gap-2">
+						{#each $selectedCategory.setA as option}
+							<button 
+								class="p-3 bg-[var(--bg-tertiary)] rounded-lg text-left text-[var(--text-primary)] hover:bg-[var(--accent-secondary)] transition-colors"
+								on:click={() => goto('/search/results?q=' + encodeURIComponent(option))}
+							>
+								{option}
+							</button>
+						{/each}
+					</div>
+				</div>
+				
+				<!-- Set B options -->
+				<div class="space-y-2">
+					<h3 class="text-md font-medium text-[var(--text-primary)]">
+						{$selectedCategory.question.split(' or ')[1]?.replace('?', '') || 'Other'}
+					</h3>
+					<div class="grid grid-cols-2 gap-2">
+						{#each $selectedCategory.setB as option}
+							<button 
+								class="p-3 bg-[var(--bg-tertiary)] rounded-lg text-left text-[var(--text-primary)] hover:bg-[var(--accent-secondary)] transition-colors"
+								on:click={() => goto('/search/results?q=' + encodeURIComponent(option))}
+							>
+								{option}
+							</button>
+						{/each}
+					</div>
+				</div>
+			</div>
+		</div>
+	{:else if showAllView && $selectedCategory == null}
+		<!-- No category available - show message -->
+		<div class="flex-1 w-full px-4 flex flex-col items-center justify-center">
+			<div class="text-center">
+				<h2 class="text-lg font-semibold text-[var(--text-primary)] mb-2">
+					No options available
+				</h2>
+				<p class="text-sm text-[var(--text-secondary)]">
+					This search doesn't have categorized options to display.
+				</p>
+			</div>
+		</div>
+	{:else}
+		<!-- Images grid view -->
+		<div class="grid flex-1 grid-cols-2 gap-2">
 			<!-- Left column (odd indices) -->
 			<div class="flex flex-col gap-3" on:touchend={leftColumnTouchEnd}>
 				{#each loadedImages as imageResult, index}
@@ -344,4 +428,5 @@
 				{/each}
 			</div>
 		</div>
+	{/if}
 </div>
