@@ -1,46 +1,33 @@
 import { type RequestHandler } from "@sveltejs/kit";
 
-// Use global variable that persists during function lifetime
-let globalCategory = "No category searched yet";
-
+// For Vercel compatibility, we'll use URL parameters to pass state
 export const GET: RequestHandler = async ({ url }) => {
-    // Check if we have a category parameter (for direct updates from other functions)
-    const categoryParam = url.searchParams.get('category');
-    if (categoryParam) {
-        globalCategory = categoryParam;
-    }
-    
-    return new Response(globalCategory, {
+    const category = url.searchParams.get('category') || "No category searched yet";
+    return new Response(category, {
         headers: {
             'Content-Type': 'text/plain',
-            'Cache-Control': 'no-cache, no-store, must-revalidate',
-            'Access-Control-Allow-Origin': '*'
+            'Cache-Control': 'no-cache, no-store, must-revalidate'
         }
     });
 };
 
+// Allow POST to update the current category
 export const POST: RequestHandler = async ({ request }) => {
     try {
         const body = await request.json();
         const { category } = body;
         
-        if (category) {
-            globalCategory = category;
-        }
-        
-        return new Response(globalCategory, {
+        return new Response(category || "No category searched yet", {
             headers: {
                 'Content-Type': 'text/plain',
-                'Cache-Control': 'no-cache, no-store, must-revalidate',
-                'Access-Control-Allow-Origin': '*'
+                'Cache-Control': 'no-cache, no-store, must-revalidate'
             }
         });
     } catch (error) {
-        return new Response(globalCategory, {
+        return new Response("No category searched yet", {
             headers: {
                 'Content-Type': 'text/plain',
-                'Cache-Control': 'no-cache, no-store, must-revalidate',
-                'Access-Control-Allow-Origin': '*'
+                'Cache-Control': 'no-cache, no-store, must-revalidate'
             }
         });
     }

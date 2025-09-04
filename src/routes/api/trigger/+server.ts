@@ -1,52 +1,37 @@
 import { type RequestHandler } from "@sveltejs/kit";
 
-// In-memory storage for trigger state
-let triggerTimestamp = 0;
-
+// For Vercel compatibility, use timestamp-based trigger state
 export const GET: RequestHandler = async ({ url }) => {
-    const timestampParam = url.searchParams.get('timestamp');
+    const timestamp = url.searchParams.get('timestamp');
     
-    if (timestampParam) {
-        triggerTimestamp = parseInt(timestampParam);
+    if (!timestamp) {
+        return new Response("false", {
+            headers: {
+                'Content-Type': 'text/plain',
+                'Cache-Control': 'no-cache, no-store, must-revalidate'
+            }
+        });
     }
     
+    const triggerTime = parseInt(timestamp);
     const currentTime = Date.now();
-    const isActive = (currentTime - triggerTimestamp) < 2000; // 2 seconds
+    const isActive = (currentTime - triggerTime) < 2000; // 2 seconds
     
     return new Response(isActive ? "true" : "false", {
         headers: {
             'Content-Type': 'text/plain',
-            'Cache-Control': 'no-cache, no-store, must-revalidate',
-            'Access-Control-Allow-Origin': '*'
+            'Cache-Control': 'no-cache, no-store, must-revalidate'
         }
     });
 };
 
-export const POST: RequestHandler = async ({ request }) => {
-    try {
-        const body = await request.json();
-        const { timestamp } = body;
-        
-        if (timestamp) {
-            triggerTimestamp = timestamp;
-        } else {
-            triggerTimestamp = Date.now();
+// Allow POST to activate trigger
+export const POST: RequestHandler = async () => {
+    const timestamp = Date.now().toString();
+    return new Response(JSON.stringify({ timestamp, triggered: true }), {
+        headers: {
+            'Content-Type': 'application/json',
+            'Cache-Control': 'no-cache, no-store, must-revalidate'
         }
-        
-        return new Response("true", {
-            headers: {
-                'Content-Type': 'text/plain',
-                'Cache-Control': 'no-cache, no-store, must-revalidate',
-                'Access-Control-Allow-Origin': '*'
-            }
-        });
-    } catch (error) {
-        return new Response("false", {
-            headers: {
-                'Content-Type': 'text/plain',
-                'Cache-Control': 'no-cache, no-store, must-revalidate',
-                'Access-Control-Allow-Origin': '*'
-            }
-        });
-    }
+    });
 };

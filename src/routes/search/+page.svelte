@@ -103,29 +103,20 @@
 				categoryName = searchTerm || '';
 			}
 			
-			// Store in localStorage for immediate client-side access
+			// Store in localStorage for Vercel compatibility
 			if (typeof window !== 'undefined') {
 				localStorage.setItem('lastSearchedCategory', categoryName);
 				localStorage.setItem('triggerTimestamp', Date.now().toString());
 			}
 			
 			try {
-				// Update the message endpoint directly with POST
-				await fetch('/api/message', {
+				// Also call the server endpoint for immediate updates
+				await fetch('/api/update-search-category', {
 					method: 'POST',
 					headers: {
 						'Content-Type': 'application/json'
 					},
 					body: JSON.stringify({ category: categoryName })
-				});
-				
-				// Update the trigger endpoint
-				await fetch('/api/trigger', {
-					method: 'POST',
-					headers: {
-						'Content-Type': 'application/json'
-					},
-					body: JSON.stringify({ timestamp: Date.now() })
 				});
 			} catch (error) {
 				console.error('Failed to update search category:', error);
