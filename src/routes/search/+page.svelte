@@ -60,10 +60,6 @@
 						const aiCategory = await response.json() as Category;
 						selectedCategory.set(aiCategory);
 						isAiGeneratedCategory = true; // Mark as AI-generated
-						// Update server-side store
-						await updateServerCategory();
-						// Trigger search activity
-						await triggerSearchActivity();
 					} else {
 						console.error('Failed to generate category');
 						// Fall back to no category (force mode)
@@ -79,12 +75,7 @@
 			} else {
 				// Category was set from homepage, so it's from MAGIC_CATEGORIES
 				isAiGeneratedCategory = false;
-				// Update server-side store
-				await updateServerCategory();
 			}
-			
-			// Trigger search activity
-			await triggerSearchActivity();
 			
 			searchForImages();
 		}
@@ -291,38 +282,6 @@
 
 	function showImagesView() {
 		showAllView = false;
-	}
-
-	// Function to update the server-side category store
-	async function updateServerCategory() {
-		if (!searchTerm) return;
-		
-		try {
-			await fetch('/api/update-category', {
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json'
-				},
-				body: JSON.stringify({
-					searchTerm,
-					category: $selectedCategory,
-					isAiGenerated: isAiGeneratedCategory
-				})
-			});
-		} catch (error) {
-			console.error('Failed to update server category:', error);
-		}
-	}
-
-	// Function to trigger search activity
-	async function triggerSearchActivity() {
-		try {
-			await fetch('/api/trigger-activity', {
-				method: 'POST'
-			});
-		} catch (error) {
-			console.error('Failed to trigger search activity:', error);
-		}
 	}
 </script>
 
