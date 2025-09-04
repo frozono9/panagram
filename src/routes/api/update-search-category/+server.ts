@@ -1,13 +1,13 @@
 import { json, type RequestHandler } from "@sveltejs/kit";
-import { globalState } from "../../../lib/server/globalState.js";
+import { setCategory, activateTrigger } from "../../../lib/server/simpleState.js";
 
 export const POST: RequestHandler = async ({ request }) => {
     const body = await request.json();
     const { category } = body;
     
     if (typeof category === 'string') {
-        globalState.setLatestSearchedCategory(category);
-        globalState.activateTrigger(); // Activate trigger when category is updated
+        setCategory(category);
+        activateTrigger(); // Activate trigger when category is updated
         return json({ success: true });
     }
     
