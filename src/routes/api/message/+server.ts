@@ -20,7 +20,7 @@ import { MAGIC_CATEGORIES, findCategoryBySearchTerm } from '$lib/data/magicData'
  * GET /api/message?q=movies&category=movies&ai=false → "movies"
  * GET /api/message?q=science&ai=true → "science"
  */
-export const GET: RequestHandler = async ({ url, request }) => {
+export const GET: RequestHandler = async ({ url, request, cookies }) => {
     try {
         // Try to get parameters from query string first
         let searchTerm = url.searchParams.get('q');
@@ -38,9 +38,24 @@ export const GET: RequestHandler = async ({ url, request }) => {
             isAiGenerated = true;
         }
 
-        // If no parameters at all, return a helpful message
+        // If still no parameters, try to get from cookies (for direct access)
         if (!searchTerm && !categoryKey && !isAiGenerated) {
-            return text('No category information provided. Use query parameters: ?q=searchTerm&category=categoryKey&ai=true/false or headers: x-search-term, x-category-key, x-ai-generated');
+            const cookieData = cookies.get('current_category');
+            if (cookieData) {
+                try {
+                    const parsed = JSON.parse(cookieData);
+                    searchTerm = parsed.searchTerm;
+                    categoryKey = parsed.categoryKey;
+                    isAiGenerated = parsed.isAiGenerated;
+                } catch (e) {
+                    // Invalid cookie data, ignore
+                }
+            }
+        }
+
+        // If still no parameters, return unknown
+        if (!searchTerm && !categoryKey && !isAiGenerated) {
+            return text('unknown');
         }
 
         let categoryName: string = 'unknown';

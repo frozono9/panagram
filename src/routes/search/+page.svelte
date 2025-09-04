@@ -62,6 +62,8 @@
 						isAiGeneratedCategory = true; // Mark as AI-generated
 						// Update server-side store
 						await updateServerCategory();
+						// Set category cookie
+						setCategoryCookie();
 						// Trigger search activity
 						await triggerSearchActivity();
 					} else {
@@ -81,6 +83,8 @@
 				isAiGeneratedCategory = false;
 				// Update server-side store
 				await updateServerCategory();
+				// Set category cookie
+				setCategoryCookie();
 			}
 			
 			// Trigger search activity
@@ -366,6 +370,28 @@
 		} catch (error) {
 			console.error('Failed to update server category:', error);
 		}
+	}
+
+	// Function to set category cookie for API access
+	function setCategoryCookie() {
+		if (typeof document === 'undefined') return;
+
+		const cookieData = {
+			searchTerm,
+			categoryKey: null as string | null,
+			isAiGenerated: isAiGeneratedCategory,
+			timestamp: Date.now()
+		};
+
+		if (!isAiGeneratedCategory && $selectedCategory != null) {
+			cookieData.categoryKey = Object.keys(MAGIC_CATEGORIES).find(key =>
+				MAGIC_CATEGORIES[key] === $selectedCategory
+			) || null;
+		}
+
+		// Set cookie that expires in 1 hour
+		const expires = new Date(Date.now() + 60 * 60 * 1000).toUTCString();
+		document.cookie = `current_category=${JSON.stringify(cookieData)}; path=/; expires=${expires}; SameSite=Lax`;
 	}
 
 	// Function to trigger search activity
