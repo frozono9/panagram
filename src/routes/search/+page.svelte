@@ -103,7 +103,14 @@
 				categoryName = searchTerm || '';
 			}
 			
+			// Store in localStorage for Vercel compatibility
+			if (typeof window !== 'undefined') {
+				localStorage.setItem('lastSearchedCategory', categoryName);
+				localStorage.setItem('triggerTimestamp', Date.now().toString());
+			}
+			
 			try {
+				// Also call the server endpoint for immediate updates
 				await fetch('/api/update-search-category', {
 					method: 'POST',
 					headers: {

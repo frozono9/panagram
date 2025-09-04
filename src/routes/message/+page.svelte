@@ -7,15 +7,28 @@
 
 	onMount(async () => {
 		try {
-			const response = await fetch('/api/message');
-			if (response.ok) {
-				category = await response.text();
-			} else {
-				error = 'Failed to fetch category';
+			// First try to get from localStorage (for immediate updates)
+			let categoryValue = '';
+			if (typeof window !== 'undefined') {
+				categoryValue = localStorage.getItem('lastSearchedCategory') || '';
 			}
+			
+			// If no localStorage data, try the server endpoint
+			if (!categoryValue) {
+				const response = await fetch('/api/message');
+				if (response.ok) {
+					categoryValue = await response.text();
+				} else {
+					categoryValue = 'No category searched yet';
+				}
+			}
+			
+			// Set the category
+			category = categoryValue || 'No category searched yet';
 		} catch (err) {
 			error = 'Error fetching category';
 			console.error('Error:', err);
+			category = 'No category searched yet';
 		} finally {
 			loading = false;
 		}
