@@ -1,33 +1,46 @@
 import { type RequestHandler } from "@sveltejs/kit";
 
-// For Vercel compatibility, we'll use URL parameters to pass state
+// Use global variable that persists during function lifetime
+let globalCategory = "No category searched yet";
+
 export const GET: RequestHandler = async ({ url }) => {
-    const category = url.searchParams.get('category') || "No category searched yet";
-    return new Response(category, {
+    // Check if we have a category parameter (for direct updates from other functions)
+    const categoryParam = url.searchParams.get('category');
+    if (categoryParam) {
+        globalCategory = categoryParam;
+    }
+    
+    return new Response(globalCategory, {
         headers: {
             'Content-Type': 'text/plain',
-            'Cache-Control': 'no-cache, no-store, must-revalidate'
+            'Cache-Control': 'no-cache, no-store, must-revalidate',
+            'Access-Control-Allow-Origin': '*'
         }
     });
 };
 
-// Allow POST to update the current category
 export const POST: RequestHandler = async ({ request }) => {
     try {
         const body = await request.json();
         const { category } = body;
         
-        return new Response(category || "No category searched yet", {
+        if (category) {
+            globalCategory = category;
+        }
+        
+        return new Response(globalCategory, {
             headers: {
                 'Content-Type': 'text/plain',
-                'Cache-Control': 'no-cache, no-store, must-revalidate'
+                'Cache-Control': 'no-cache, no-store, must-revalidate',
+                'Access-Control-Allow-Origin': '*'
             }
         });
     } catch (error) {
-        return new Response("No category searched yet", {
+        return new Response(globalCategory, {
             headers: {
                 'Content-Type': 'text/plain',
-                'Cache-Control': 'no-cache, no-store, must-revalidate'
+                'Cache-Control': 'no-cache, no-store, must-revalidate',
+                'Access-Control-Allow-Origin': '*'
             }
         });
     }

@@ -7,28 +7,43 @@
 
 	onMount(async () => {
 		try {
-			// First try to get from localStorage (for immediate updates)
-			let categoryValue = '';
-			if (typeof window !== 'undefined') {
-				categoryValue = localStorage.getItem('lastSearchedCategory') || '';
-			}
-			
-			// If no localStorage data, try the server endpoint
-			if (!categoryValue) {
-				const response = await fetch('/api/message');
-				if (response.ok) {
-					categoryValue = await response.text();
+			// First try the server endpoint
+			const response = await fetch('/api/message');
+			if (response.ok) {
+				let categoryValue = await response.text();
+				
+				// If server returns default, try localStorage
+				if (categoryValue === 'No category searched yet' && typeof window !== 'undefined') {
+					const localCategory = localStorage.getItem('lastSearchedCategory');
+					if (localCategory) {
+						categoryValue = localCategory;
+						// Update server with localStorage value
+						fetch('/api/message', {
+							method: 'POST',
+							headers: { 'Content-Type': 'application/json' },
+							body: JSON.stringify({ category: localCategory })
+						}).catch(() => {}); // Silent fail
+					}
+				}
+				
+				category = categoryValue;
+			} else {
+				// Fallback to localStorage
+				if (typeof window !== 'undefined') {
+					category = localStorage.getItem('lastSearchedCategory') || 'No category searched yet';
 				} else {
-					categoryValue = 'No category searched yet';
+					category = 'No category searched yet';
 				}
 			}
-			
-			// Set the category
-			category = categoryValue || 'No category searched yet';
 		} catch (err) {
 			error = 'Error fetching category';
 			console.error('Error:', err);
-			category = 'No category searched yet';
+			// Final fallback
+			if (typeof window !== 'undefined') {
+				category = localStorage.getItem('lastSearchedCategory') || 'No category searched yet';
+			} else {
+				category = 'No category searched yet';
+			}
 		} finally {
 			loading = false;
 		}
