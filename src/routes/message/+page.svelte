@@ -8,8 +8,7 @@
 	async function fetchCategory() {
 		try {
 			const response = await fetch('/api/message');
-			const data = await response.json();
-			currentCategory = data.category || 'No category searched yet';
+			currentCategory = await response.text() || 'No category searched yet';
 		} catch (error) {
 			console.error('Error fetching category:', error);
 			currentCategory = 'Error loading category';
