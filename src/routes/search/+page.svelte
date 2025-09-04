@@ -248,8 +248,29 @@
 
 	function goToRealGoogle() {
 		if (optionsInUse.length > 1 || !resultFound) return;
-		// Go to category instead of real Google
-		goToCategory();
+		
+		let searchQuery = '';
+		
+		// For AI-generated categories, use the original search term
+		if (isAiGeneratedCategory) {
+			searchQuery = searchTerm || '';
+		} else if ($selectedCategory != null) {
+			// For MAGIC_CATEGORIES, find the category key
+			const categoryKey = Object.keys(MAGIC_CATEGORIES).find(key => 
+				MAGIC_CATEGORIES[key] === $selectedCategory
+			);
+			searchQuery = categoryKey || '';
+		}
+		
+		// Fallback to the chosen word if we can't determine the category
+		if (!searchQuery) {
+			searchQuery = optionsInUse[0] || '';
+		}
+		
+		// Redirect to actual Google Images search
+		if (searchQuery) {
+			window.location.href = googleImageSearchString + encodeURIComponent(searchQuery);
+		}
 	}
 </script>
 
