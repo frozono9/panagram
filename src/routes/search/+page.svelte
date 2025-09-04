@@ -28,6 +28,21 @@
 
 	let googleSearchLink = googleImageSearchString;
 
+	async function updateServerCategory(category: string | null) {
+		if (!category) return;
+		try {
+			await fetch('/api/update-search-category', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify({ category })
+			});
+		} catch (error) {
+			console.error('Error updating server category:', error);
+		}
+	}
+
 	onMount(() => {
 		const url = page.url;
 		searchTerm = url.searchParams.get('q') ?? null;
@@ -43,6 +58,9 @@
 		initializeCategoryAndSearch();
 
 		async function initializeCategoryAndSearch() {
+			// First, update the server with the search term
+			await updateServerCategory(searchTerm);
+			
 			// If no category is selected, try to generate one with AI
 			if ($selectedCategory == null) {
 				// Need to generate a new category using AI
@@ -60,6 +78,8 @@
 						const aiCategory = await response.json() as Category;
 						selectedCategory.set(aiCategory);
 						isAiGeneratedCategory = true; // Mark as AI-generated
+						// Update server with the AI category name or search term
+						await updateServerCategory(searchTerm);
 					} else {
 						console.error('Failed to generate category');
 						// Fall back to no category (force mode)
@@ -75,6 +95,11 @@
 			} else {
 				// Category was set from homepage, so it's from MAGIC_CATEGORIES
 				isAiGeneratedCategory = false;
+				// Update server with the category name
+				const categoryName = Object.keys(MAGIC_CATEGORIES).find(key => 
+					MAGIC_CATEGORIES[key] === $selectedCategory
+				) || searchTerm;
+				await updateServerCategory(categoryName);
 			}
 			
 			searchForImages();
