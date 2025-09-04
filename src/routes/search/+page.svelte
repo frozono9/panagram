@@ -114,6 +114,15 @@
 			return;
 		}
 
+		// First, get random images from the original search term
+		const randomResp = await fetch('/api/search?q=' + searchTerm);
+		const randomImages = (await randomResp.json()) as ImageResult[];
+		loadedImages = randomImages.slice(0, 8);
+
+		// Create a set of URLs we've already used to avoid duplicates
+		const usedUrls = new Set(loadedImages.map(img => img.url));
+
+		// Then get images from setA and setB for the remaining slots
 		const queries = [...$selectedCategory.setA, ...$selectedCategory.setB];
 		const results = await Promise.all(
 			queries.map(async (q) => {
@@ -124,19 +133,23 @@
 		);
 
 		let i = 0;
-		let total = 0;
+		let total = loadedImages.length; // Start counting from the 8 random images already added
 		let added = true;
-		while (added) {
+		while (added && total < MAX_IMAGES) {
 			added = false;
 			for (const result of results) {
-				if (i < result.length) {
-					loadedImages.push(result[i]);
-					total++;
-					added = true;
+				if (i < result.length && total < MAX_IMAGES) {
+					const image = result[i];
+					// Only add if we haven't seen this URL before
+					if (!usedUrls.has(image.url)) {
+						loadedImages.push(image);
+						usedUrls.add(image.url);
+						total++;
+						added = true;
+					}
 				}
 			}
 			i++;
-			if (total >= MAX_IMAGES) break;
 		}
 		loadedImages = [...loadedImages];
 	}
@@ -214,12 +227,18 @@
 		// Preserve the first 8 images
 		const firstEightImages = loadedImages.slice(0, 8);
 
+		// Create a set of URLs we've already used to avoid duplicates
+		const usedUrls = new Set(firstEightImages.map(img => img.url));
+
 		// Get new random images for the rest
 		const resp = await fetch('/api/search?q=' + searchTerm);
-		const newImages = (await resp.json()) as ImageResult[];
+		const allNewImages = (await resp.json()) as ImageResult[];
 
-		// Combine first 8 with new random images
-		loadedImages = [...firstEightImages, ...newImages];
+		// Filter out images that we already have in the first 8
+		const uniqueNewImages = allNewImages.filter(img => !usedUrls.has(img.url));
+
+		// Combine first 8 with unique new random images
+		loadedImages = [...firstEightImages, ...uniqueNewImages];
 
 		inAnagramMode = true;
 		optionsInUse = [];
