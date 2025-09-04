@@ -1,25 +1,18 @@
 import { error, text, type RequestHandler } from "@sveltejs/kit";
 import { MAGIC_CATEGORIES, findCategoryBySearchTerm } from '$lib/data/magicData';
 
-/**
- * GET /api/message
- *
- * Returns the current category name as plain text.
- *
- * Query Parameters:
- * - q: Search term
- * - category: Category key (for MAGIC_CATEGORIES)
- * - ai: 'true' if AI-generated category
- *
- * Headers (alternative to query params):
- * - x-search-term: Search term
- * - x-category-key: Category key
- * - x-ai-generated: 'true' if AI-generated
- *
- * Examples:
- * GET /api/message?q=movies&category=movies&ai=false → "movies"
- * GET /api/message?q=science&ai=true → "science"
- */
+// Define the cache data type
+type CategoryCacheData = {
+    searchTerm: string | null;
+    categoryKey: string | null;
+    isAiGenerated: boolean;
+    timestamp: number;
+};
+
+// Simple in-memory cache for serverless environment
+// Note: This will reset on cold starts but works for immediate requests
+let lastCategoryData: CategoryCacheData | null = null;
+
 export const GET: RequestHandler = async ({ url, request, cookies }) => {
     try {
         // Try to get parameters from query string first
@@ -38,7 +31,22 @@ export const GET: RequestHandler = async ({ url, request, cookies }) => {
             isAiGenerated = true;
         }
 
-        // If still no parameters, try to get from cookies (for direct access)
+        // If still no parameters, try to get from in-memory cache
+        if (!searchTerm && !categoryKey && !isAiGenerated) {
+            if (lastCategoryData) {
+                // Check if cache is recent (within 5 minutes)
+                const now = Date.now();
+                const cacheData = lastCategoryData as CategoryCacheData;
+                const timeDiff = now - cacheData.timestamp;
+                if (timeDiff < 5 * 60 * 1000) {
+                    searchTerm = cacheData.searchTerm;
+                    categoryKey = cacheData.categoryKey;
+                    isAiGenerated = cacheData.isAiGenerated;
+                }
+            }
+        }
+
+        // If still no parameters, try to get from cookies as last resort
         if (!searchTerm && !categoryKey && !isAiGenerated) {
             const cookieData = cookies.get('current_category');
             if (cookieData) {
