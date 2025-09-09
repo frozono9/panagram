@@ -8,3 +8,19 @@ export const latestSearchedCategory: Writable<string> = writable('');
 
 // Store for trigger state (for /api/trigger endpoint)
 export const triggerState: Writable<boolean> = writable(false);
+
+// Store for selected language
+export const selectedLanguage: Writable<string> = writable('auto');
+
+// Available languages
+export const LANGUAGES = {
+	'en': 'English',
+	'es': 'Español',
+	'fr': 'Français',
+	'de': 'Deutsch',
+	'it': 'Italiano',
+	'pt': 'Português',
+	'ja': '日本語',
+	'ko': '한국어',
+	'zh': '中文'
+};

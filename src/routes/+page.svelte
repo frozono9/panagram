@@ -10,7 +10,7 @@
 		MAGIC_CATEGORIES,
 		type Category
 	} from '$lib/data/magicData';
-	import { selectedCategory } from '$lib/stores';
+	import { selectedCategory, selectedLanguage, LANGUAGES } from '$lib/stores';
 	import { onMount } from 'svelte';
 
 	onMount(() => {
@@ -19,6 +19,27 @@
 		if (search != null) {
 			searchVisible = true;
 		}
+		
+		// Detect system language
+		let detectedLang = 'en'; // Default fallback
+		
+		try {
+			if (typeof navigator !== 'undefined' && navigator.language) {
+				const systemLang = navigator.language.split('-')[0].toLowerCase();
+				console.log('Detected system language:', navigator.language, '->', systemLang);
+				
+				// Check if the detected language is in our supported languages
+				if (systemLang in LANGUAGES) {
+					detectedLang = systemLang;
+				}
+			}
+		} catch (error) {
+			console.warn('Language detection failed:', error);
+		}
+		
+		console.log('Setting initial language to:', detectedLang);
+		selectedLanguage.set(detectedLang);
+		
 		handleAutocomplete();
 	});
 

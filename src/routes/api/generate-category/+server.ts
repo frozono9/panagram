@@ -5,18 +5,40 @@ import { GEMINI_API_KEY } from '$env/static/private';
 
 const genAI = new GoogleGenerativeAI(GEMINI_API_KEY || '');
 
+// Language mapping function
+function getLanguageName(code: string): string {
+    const languages: Record<string, string> = {
+        'en': 'English',
+        'es': 'Spanish',
+        'fr': 'French',
+        'de': 'German',
+        'it': 'Italian',
+        'pt': 'Portuguese',
+        'ja': 'Japanese',
+        'ko': 'Korean',
+        'zh': 'Chinese'
+    };
+    return languages[code] || 'English';
+}
+
 export const POST: RequestHandler = async ({ request }) => {
     try {
-        const { searchTerm } = await request.json();
+        const { searchTerm, language = 'en' } = await request.json();
         
         if (!searchTerm) {
             throw error(400, 'Search term is required');
         }
 
+        // Validate and normalize language
+        const supportedLanguages = ['en', 'es', 'fr', 'de', 'it', 'pt', 'ja', 'ko', 'zh'];
+        const validLanguage = supportedLanguages.includes(language) ? language : 'en';
+
         const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
         const prompt = `
 You are helping create a magic trick category based on a search term. Given the search term "${searchTerm}", create a category that can be used for a binary choice anagram game.
+
+IMPORTANT: Generate all content in ${getLanguageName(validLanguage)}. The question, items, and search terms should all be in this language.
 
 The category should have:
 1. A question that creates a clear binary choice (like "Man-made or natural?" or "Sweet or savory?")

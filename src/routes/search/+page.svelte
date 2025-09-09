@@ -6,7 +6,7 @@
 	import ImageSearchResult from '$lib/components/imageSearchResult.svelte';
 	import LabsLogo from '$lib/components/labsLogo.svelte';
 	import { googleImageSearchString, findCategoryBySearchTerm, type Category, FORCE_ITEMS, MAGIC_CATEGORIES } from '$lib/data/magicData';
-	import { selectedCategory } from '$lib/stores';
+	import { selectedCategory, selectedLanguage } from '$lib/stores';
 	import { bestSplitLetter } from '$lib/utils/anagram';
 	import { onMount } from 'svelte';
 
@@ -71,7 +71,10 @@
 						headers: {
 							'Content-Type': 'application/json'
 						},
-						body: JSON.stringify({ searchTerm })
+						body: JSON.stringify({ 
+							searchTerm,
+							language: $selectedLanguage 
+						})
 					});
 					
 					if (response.ok) {
@@ -138,7 +141,7 @@
 			contextKeywords = $selectedCategory.searchTerms;
 		} else if ($selectedCategory) {
 			// Fallback: use the original search term as context
-			contextKeywords = [searchTerm];
+			contextKeywords = searchTerm ? [searchTerm] : [];
 		}
 
 		// Then get images from setA and setB for the remaining slots
