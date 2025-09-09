@@ -31,8 +31,10 @@
 	let searchTerm: string = '';
 	let forceItemsVisible = false;
 	let searchResults: string[] = [];
+	let selectedIndex: number = -1; // -1 means no selection, use typed text
 
 	async function handleAutocomplete() {
+		selectedIndex = -1; // Reset selection when typing
 		if (searchTerm == '') {
 			searchResults = Object.keys(MAGIC_CATEGORIES);
 			return;
@@ -72,8 +74,23 @@
 	}
 
 	function handleKeydown(event: KeyboardEvent) {
-		if (event.key === 'Enter' && searchResults.length > 0) {
-			selectSearchItem(searchResults[0]);
+		if (event.key === 'Enter') {
+			event.preventDefault();
+			if (selectedIndex >= 0 && selectedIndex < searchResults.length) {
+				selectSearchItem(searchResults[selectedIndex]);
+			} else {
+				selectSearchItem(searchTerm);
+			}
+		} else if (event.key === 'ArrowDown') {
+			event.preventDefault();
+			if (searchResults.length > 0) {
+				selectedIndex = Math.min(selectedIndex + 1, searchResults.length - 1);
+			}
+		} else if (event.key === 'ArrowUp') {
+			event.preventDefault();
+			selectedIndex = Math.max(selectedIndex - 1, -1);
+		} else if (event.key === 'Escape') {
+			selectedIndex = -1;
 		}
 	}
 </script>
@@ -103,9 +120,9 @@
 			<i class="ti ti-camera text-2xl text-[var(--text-secondary)]"></i>
 		</nav>
 		<div class="flex w-full flex-col items-center gap-3">
-			{#each options as option}
+			{#each options as option, index}
 				<button
-					class="flex w-full flex-row gap-3 px-4 text-[var(--text-secondary)]"
+					class="flex w-full flex-row gap-3 px-4 text-[var(--text-secondary)] {selectedIndex === index ? 'bg-[var(--bg-hover)]' : ''}"
 					on:click={() => selectSearchItem(option)}
 				>
 					<i class="ti ti-search text-2xl"></i>
@@ -157,3 +174,15 @@
 		</div>
 	{/if}
 </div>
+
+<style>
+	:global(:root) {
+		--bg-hover: rgba(0, 0, 0, 0.1);
+	}
+	
+	@media (prefers-color-scheme: dark) {
+		:global(:root) {
+			--bg-hover: rgba(255, 255, 255, 0.1);
+		}
+	}
+</style>
