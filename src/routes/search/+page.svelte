@@ -122,11 +122,36 @@
 		// Create a set of URLs we've already used to avoid duplicates
 		const usedUrls = new Set(loadedImages.map(img => img.url));
 
+		// Find the category key to get context keywords
+		let contextKeywords: string[] = [];
+		
+		// First try to find it in MAGIC_CATEGORIES (predefined categories)
+		const categoryKey = Object.keys(MAGIC_CATEGORIES).find(key => 
+			MAGIC_CATEGORIES[key] === $selectedCategory
+		);
+		
+		if (categoryKey) {
+			// Predefined category
+			contextKeywords = MAGIC_CATEGORIES[categoryKey].searchTerms;
+		} else if ($selectedCategory && $selectedCategory.searchTerms) {
+			// AI-generated category (has searchTerms property)
+			contextKeywords = $selectedCategory.searchTerms;
+		} else if ($selectedCategory) {
+			// Fallback: use the original search term as context
+			contextKeywords = [searchTerm];
+		}
+
 		// Then get images from setA and setB for the remaining slots
 		const queries = [...$selectedCategory.setA, ...$selectedCategory.setB];
 		const results = await Promise.all(
 			queries.map(async (q) => {
-				const resp = await fetch('/api/search?q=' + q);
+				// Add context keywords to the search query for better image results
+				let searchQuery = q;
+				if (contextKeywords.length > 0) {
+					// Add the first context keyword to make searches more specific
+					searchQuery = `${q} ${contextKeywords[0]}`;
+				}
+				const resp = await fetch('/api/search?q=' + encodeURIComponent(searchQuery));
 				const data = await resp.json();
 				return data;
 			})
