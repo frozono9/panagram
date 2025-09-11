@@ -1,0 +1,1 @@
+export const COOKIE_NAME = 'license_validated';
