@@ -33,7 +33,7 @@ export const POST: RequestHandler = async ({ request }) => {
         const supportedLanguages = ['en', 'es', 'fr', 'de', 'it', 'pt', 'ja', 'ko', 'zh'];
         const validLanguage = supportedLanguages.includes(language) ? language : 'en';
 
-        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+        const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash-lite-001" });
 
         const prompt = `
 You are helping create a magic trick category based on a search term. Given the search term "${searchTerm}", create a category that can be used for a binary choice anagram game.
