@@ -1,7 +1,9 @@
 <script lang="ts">
 	import '../App.css';
 	import { selectedLanguage, LANGUAGES } from '$lib/stores';
-	let { children } = $props();
+	import Gatekeeper from '$lib/components/Gatekeeper.svelte';
+
+	let { children, data } = $props();
 </script>
 
 <svelte:head>
@@ -23,13 +25,16 @@
 	/>
 </svelte:head>
 
-<!-- Main content -->
-<main class="min-h-screen">
-	{@render children()}
-</main>
+{#if !data.isAuthenticated}
+	<Gatekeeper />
+{:else}
+	<!-- Main content -->
+	<main class="min-h-screen">
+		{@render children()}
+	</main>
 
-<!-- Footer -->
-<footer class="bg-[var(--bg-footer)] border-t border-[var(--border-footer)] px-4 py-3">
+	<!-- Footer -->
+	<footer class="bg-[var(--bg-footer)] border-t border-[var(--border-footer)] px-4 py-3">
 	<div class="flex flex-wrap justify-center items-center gap-6 text-sm text-[var(--text-secondary)]">
 		<a href="#" class="hover:underline text-[var(--text-secondary)]">How Search works</a>
 		<a href="#" class="hover:underline text-[var(--text-secondary)]">Privacy</a>
@@ -49,6 +54,7 @@
 		</select>
 	</div>
 </footer>
+{/if}
 
 <style>
 	:global(:root) {
